@@ -40,7 +40,7 @@ bx_p = 0.0
 for k in range(n+1):
     bx_p += hod.bell(n,k,x)
 tp = time.time() - t0
-print("c bell  : ", tp)
+print("p bell  : ", tp)
 print("speedup :", tp/tc)
 
 print(bx_c)

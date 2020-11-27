@@ -1,5 +1,4 @@
 # cython: language_level=3, boundscheck=False, overflowcheck=False, cdivision=True
-
 """
 Created on Fri Nov 27 16:22:24 2020
 
@@ -11,21 +10,21 @@ import array
 # Binomial coefficients
 # from https://gist.github.com/rougier/ebe734dcc6f4ff450abf
 # Faster than scipy.special.binom
-cdef binomial_c(int n, int k):
+cdef int binomial_c(int n, int k):
     cdef int b, t
     if not 0 <= k <= n:
-        return int(0)
+        return 0
     b = 1
     for t in range(min(k, n-k)):
         b *= n
-        b /= t+1
+        b //= t+1
         n -= 1
     return b
 
 
 # Bell polynomial evaluation
 # https://en.wikipedia.org/wiki/Bell_polynomials
-cdef bell_c(int n, int k, double[:] x):
+cdef double bell_c(int n, int k, double[:] x):
     """
     Evaluate the partial exponential Bell polynomial B_n,k(x)
     """
@@ -37,9 +36,8 @@ cdef bell_c(int n, int k, double[:] x):
         return 0.0
     else:
         b = 0.0
-        for i in range(n-k+1):
-            c = binomial_c(n-1, i) 
-            b += c * x[i] * bell_c(n-i-1, k-1, x)
+        for i in range(n-k+1): 
+            b += binomial_c(n-1, i) * x[i] * bell_c(n-i-1, k-1, x)
         return b
     
 # Wrapper for binomial_c, should be used only for testing
@@ -55,15 +53,4 @@ def bell(int n, int k, xx):
     assert len(xx) >= n-k+1, "Array x is too short. Length should be at least n-k+1"
     return bell_c(n, k, cx)
 
-
-def arrsum(aa):
-    cdef int n, k
-    cdef double s
-    cdef array.array a = array.array('d', aa)
-    cdef double[:] ca = a;
-    n = len(a)
-    s = 0
-    for k in range(n):
-        s += a[k]
-    return s
     
