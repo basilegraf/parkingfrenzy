@@ -37,6 +37,19 @@ def power_series_comp(f, g):
     return h
 
 def composition_rule(f, g):
+    """    
+    Compute the derivatives of f(g(x)) w.r.t. x given the
+    list of derivatives of f at g(x) and of g at x using 
+    truncated power series composition
+    Parameters:
+        
+        f : list of derivatives of f. f = [f^(0)(g(x)), f^(1)(g(x)), ..., f^(n)(g(x))]
+    
+        g : list of derivatives of g. g = [g^(0)(x),    g^(1)(x),    ..., g^(n)(x)]
+    compute the list
+        h : list of derivatives of h. h = [h^(0)(x),    h^(1)(x),    ..., h^(n)(x)]
+    where h(x) = f(g(x))
+    """
     assert len(f) == len(g), "f and g must be of the same length"
     n = len(f) - 1
     p1 = f.copy()
