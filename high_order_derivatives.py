@@ -146,6 +146,7 @@ def composition_rule(f,g):
 
 if __name__ == "__main__":
     import sympy as sp
+    import truncated_power_series as trunc
     
     def nest_list(f,x,n):
         fx = [0] * (n+1)
@@ -199,10 +200,15 @@ if __name__ == "__main__":
     f_of_g2_n = composition_rule_nth(f_at_g[1:], g[1:])
     # all devivatives of f(g(x)) w.r.t to x using Faa di Bruno
     f_of_g2 = composition_rule(f_at_g, g)
-    print('n-th composite derivative check: ', sp.simplify(f_of_g1[-1]-f_of_g2_n))
+    print('n-th composite derivative check (Faa di Bruno)     : ', sp.simplify(f_of_g1[-1]-f_of_g2_n))
     check_f_of_g = list(map(lambda s1,s2 : sp.simplify(s1-s2), f_of_g1, f_of_g2))
-    print('Composition rule check: ', check_f_of_g)
+    print('Composition rule check (Faa di Bruno)              : ', check_f_of_g)
+    
+    # all devivatives of f(g(x)) w.r.t to x using truncated power series
+    f_of_g3 = trunc.composition_rule(f_at_g, g)
+    check_f_of_g3 = list(map(lambda s1,s2 : sp.simplify(s1-s2), f_of_g1, f_of_g3))
+    print('Composition rule check: (truncated power series)   : ', check_f_of_g)
     
 
-    
+   
     

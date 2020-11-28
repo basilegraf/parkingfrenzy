@@ -36,6 +36,28 @@ def power_series_comp(f, g):
             h[q] += f[k] * mono[q]
     return h
 
+def composition_rule(f, g):
+    assert len(f) == len(g), "f and g must be of the same length"
+    n = len(f) - 1
+    p1 = f.copy()
+    p2 = [0] * (n+1)
+    p2[0] = -g[0]
+    p2[1] = 1
+    p3 = g.copy()
+    kfac = 1
+    for k in range(n + 1):
+        p1[k] *= kfac 
+        p3[k] *= kfac 
+        kfac /= k + 1
+    h = power_series_comp(p2, p3)
+    h = power_series_comp(p1, h)
+    kfac = 1
+    for k in range(n + 1):
+        h[k] *= kfac
+        kfac *= k + 1
+    return h
+        
+        
 
 if __name__ == "__main__":
     import sympy as sp
@@ -66,11 +88,11 @@ if __name__ == "__main__":
     
     # timing
     n = 100
-    fnum = np.random.randn(n)
-    gnum = np.random.randn(n)
+    fnum = 1e-10*np.random.randn(n)
+    gnum = 1e-10*np.random.randn(n)
     
     t0 = time.time()
-    fgnum = power_series_comp(fnum, gnum)
+    fgnum = composition_rule(fnum, gnum)
     t1 = time.time()
     print("Time :", t1-t0)
     print("Composition: ", fgnum)
