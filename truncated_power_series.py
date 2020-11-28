@@ -52,6 +52,10 @@ def composition_rule(f, g):
     """
     assert len(f) == len(g), "f and g must be of the same length"
     n = len(f) - 1
+    # Constant power series case => value is f[0] independently of g
+    if n == 0:
+        return f
+    # Non trivial cases
     p1 = f.copy()
     p2 = [0] * (n+1)
     p2[0] = -g[0]
