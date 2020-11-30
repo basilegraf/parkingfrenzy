@@ -71,3 +71,50 @@ def quotient_rule_r(f,g):
     assert (len(f) == len(g)), "Lists of derivatives of f and g must be of the same length"
     rg = reciprocal_rule_r(g)
     return product_rule_r(f, rg)
+
+# h(x) = f(g(x)) mod O(x^(n+1))
+def poly_composition_rule_r(f, g):
+    assert len(f) == len(g), "f and g must be of the same length"
+    n = len(f) - 1
+    h = [0] * (n + 1)
+    # degree zero of result h
+    h[0] = f[0]
+    # mono: monomial g(x)^k
+    mono = [0] * (n + 1) 
+    mono[0] = 1 # g(x)^0
+    # compute degrees 1,...,n
+    for k in range(1, n + 1):
+        mono = product_rule_r(mono, g)
+        for q in range(n + 1):
+            h[q] += f[k] * mono[q]
+    return h
+
+
+def composition_rule_r(f, g):
+    """    
+    Compute the derivatives of f(g(x)) w.r.t. x given the
+    list of derivatives of f at g(x) and of g at x using 
+    truncated power series composition
+    Parameters:
+        
+        f : list of derivatives of f. f = [f^[0](g(x)), f^[1](g(x)), ..., f^[1](g(x))]
+    
+        g : list of derivatives of g. g = [g^[0](x),    g^[1](x),    ..., g^[1](x)]
+    compute the list
+        h : list of derivatives of h. h = [h^[0](x),    h^[1]x),    ..., h^[1](x)]
+    where h(x) = f(g(x))
+    """
+    assert len(f) == len(g), "f and g must be of the same length"
+    n = len(f) - 1
+    # Constant power series case => value is f[0] independently of g
+    if n == 0:
+        return f
+    # Non trivial cases
+    p1 = f.copy()
+    p2 = [0] * (n+1)
+    p2[0] = -g[0]
+    p2[1] = 1
+    p3 = g.copy()
+    h = poly_composition_rule_r(p2, p3)
+    h = poly_composition_rule_r(p1, h)
+    return h

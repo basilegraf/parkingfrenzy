@@ -112,5 +112,12 @@ check_f_of_g3 = list(map(lambda s1,s2 : sp.simplify(s1-s2), f_of_g1, f_of_g3))
 print('Composition rule check: (truncated power series)   : ', check_f_of_g)
 
 
+# all devivatives of f(g(x)) w.r.t to x using rescaled truncated power series
+f_of_gr = retrieve_derivatives(
+    proquo_r.composition_rule_r(rescale_derivatives(f_at_g), rescale_derivatives(g)))
+check_f_of_gr = list(map(lambda s1,s2 : sp.simplify(s1-s2), f_of_g1, f_of_gr))
+print('Composition rule check: (rescaled power series)   : ', check_f_of_gr)
+
+
    
     
