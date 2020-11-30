@@ -10,6 +10,7 @@ import numpy as np
 import sympy as sp
 
 import product_quotient_rules as proquo
+import product_quotient_rules_rescaled as proquo_r
 import faa_di_bruno as bruno
 import truncated_power_series as trunc
 
@@ -24,6 +25,22 @@ def derivatives_list(s,x,n):
     f = lambda expr : sp.diff(expr, x)
     return nest_list(f,s,n)
 
+def rescale_derivatives(f):
+    fr = f.copy()
+    fac = 1
+    for k in range(len(f)):
+        fr[k] /= fac
+        fac *= k + 1
+    return fr
+
+def retrieve_derivatives(f):
+    fr = f.copy()
+    fac = 1
+    for k in range(len(f)):
+        fr[k] *= fac
+        fac *= k + 1
+    return fr
+
 n = 4
 x = sp.symbols('x')
 # derivatives of f(x) w.r.t x
@@ -34,10 +51,16 @@ g = derivatives_list(sp.ln(x), x, n)
 # Product rule check
 # Compute product derivatives with sympy directly
 fg1 = derivatives_list(f[0] * g[0], x, n)
-# Compute prodeuct derivatives using product_rule()
+# Compute product derivatives using product_rule()
 fg2 = proquo.product_rule(f,g)
 check_fg = list(map(lambda s1,s2 : sp.simplify(s1-s2), fg1, fg2))
 print('Product rule check: ', check_fg)
+
+# Rescaled product rule
+fgr = retrieve_derivatives(
+    proquo_r.product_rule_r(rescale_derivatives(f), rescale_derivatives(g)))
+check_fgr = list(map(lambda s1,s2 : sp.simplify(s1-s2), fg1, fgr))
+print('Product rule check rescaled: ', check_fgr)
 
 # Reciprocal rule check
 # Compute reciprocal derivatives with sympy directly
@@ -47,6 +70,13 @@ rf2 = proquo.reciprocal_rule(f)
 check_rf = list(map(lambda s1,s2 : sp.simplify(s1-s2), rf1, rf2))
 print('Reciprocal rule check: ', check_rf)
 
+# Rescaled reciprocal rule
+rfr = retrieve_derivatives(
+    proquo_r.reciprocal_rule_r(rescale_derivatives(f)))
+check_rfr = list(map(lambda s1,s2 : sp.simplify(s1-s2), rf1, rfr))
+print('Reciprocal rule check rescaled: ', check_rfr)
+
+
 # Quotient rule check
 # Compute quotient derivatives with sympy directly
 qfg1 = derivatives_list(f[0] / g[0], x, n)
@@ -54,6 +84,12 @@ qfg1 = derivatives_list(f[0] / g[0], x, n)
 qfg2 = proquo.quotient_rule(f,g)
 check_qfg = list(map(lambda s1,s2 : sp.simplify(s1-s2), qfg1, qfg2))
 print('Quotient rule check: ', check_qfg)
+
+# Rescaled quotient rule
+qfgr = retrieve_derivatives(
+    proquo_r.quotient_rule_r(rescale_derivatives(f), rescale_derivatives(g)))
+check_qfgr = list(map(lambda s1,s2 : sp.simplify(s1-s2), qfg1, qfgr))
+print('Quotient rule check rescaled: ', check_qfgr)
 
 
 # Composite derivatives check
