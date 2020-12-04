@@ -54,3 +54,32 @@ print(h)
 print(hc)
 print(hc-h)
 
+
+h  = poly.composition_rule_r(f, g)
+hc = polyc.composition_rule_r(f, g)
+
+print("function composition rule")
+print(h)
+print(hc)
+print(hc-h)
+
+
+n = 200
+f = np.random.randn(n)
+g = np.random.randn(n)
+
+t0 = time.time()
+hc  = polyc.composition_rule_r(f, g)
+t1c = time.time() - t0
+print("time c: ", t1c)
+
+t0 = time.time()
+h  = poly.composition_rule_r(f, g)
+t1p = time.time() - t0
+print("time p: ", t1p)
+print("Speedup = ", t1p/t1c)
+
+print("Max relative diff: ", np.max(np.abs(hc-h)) / np.max(np.abs(h)))
+
+
+

@@ -152,31 +152,57 @@ def poly_composition_rule_r(ff, gg):
     return np.array(h)
 
 
-# def composition_rule_rc(f, g):
-#     """    
-#     Compute the derivatives of f(g(x)) w.r.t. x given the
-#     list of derivatives of f at g(x) and of g at x using 
-#     truncated power series composition
-#     Parameters:
+def composition_rule_r(ff, gg):
+    """    
+    Compute the derivatives of f(g(x)) w.r.t. x given the
+    list of derivatives of f at g(x) and of g at x using 
+    truncated power series composition
+    Parameters:
         
-#         f : list of derivatives of f. f = [f^[0](g(x)), f^[1](g(x)), ..., f^[1](g(x))]
+        f : list of derivatives of f. f = [f^[0](g(x)), f^[1](g(x)), ..., f^[1](g(x))]
     
-#         g : list of derivatives of g. g = [g^[0](x),    g^[1](x),    ..., g^[1](x)]
-#     compute the list
-#         h : list of derivatives of h. h = [h^[0](x),    h^[1]x),    ..., h^[1](x)]
-#     where h(x) = f(g(x))
-#     """
-#     assert len(f) == len(g), "f and g must be of the same length"
-#     n = len(f) - 1
-#     # Constant power series case => value is f[0] independently of g
-#     if n == 0:
-#         return f
-#     # Non trivial cases
-#     p1 = f.copy()
-#     p2 = [0] * (n+1)
-#     p2[0] = -g[0]
-#     p2[1] = 1
-#     p3 = g.copy()
-#     h = poly_composition_rule_r(p2, p3)
-#     h = poly_composition_rule_r(p1, h)
-#     return h
+        g : list of derivatives of g. g = [g^[0](x),    g^[1](x),    ..., g^[1](x)]
+    compute the list
+        h : list of derivatives of h. h = [h^[0](x),    h^[1]x),    ..., h^[1](x)]
+    where h(x) = f(g(x))
+    """
+    assert len(ff) == len(gg), "Arrays should have same length"
+    cdef int n = len(ff) # polynomial degree + 1
+    # Constant power series case => value is f[0] independently of g
+    if n == 1: # i.e. degree zero
+        return ff
+    cdef array.array f = array.array('d', ff)
+    cdef double[:] cf = f
+    cdef array.array g = array.array('d', gg)
+    cdef double[:] cg = g
+    cdef array.array h = array.array('d', [0] * n)
+    cdef double[:] ch = h
+    cdef array.array mono1 = array.array('d', [0] * n)
+    cdef double[:] cmono1 = mono1
+    cdef array.array mono2 = array.array('d', [0] * n)
+    cdef double[:] cmono2 = mono2
+    cdef array.array tmp1 = array.array('d', [0] * n)
+    cdef double[:] ctmp1 = tmp1
+    cdef array.array tmp2 = array.array('d', [0] * n)
+    cdef double[:] ctmp2 = tmp2
+
+    cdef array.array p1 = array.array('d', [0] * n)
+    cdef double[:] cp1 = p1
+    cdef array.array p2 = array.array('d', [0] * n)
+    cdef double[:] cp2 = p2
+    cdef array.array p3 = array.array('d', [0] * n)
+    cdef double[:] cp3 = p3
+    cdef array.array p2p3 = array.array('d', [0] * n)
+    cdef double[:] cp2p3 = p2p3
+    
+    # Non trivial cases
+    for k in range(n):
+        cp1[k] = cf[k]
+    cp2[0] = -cg[0]
+    cp2[1] = 1    
+    for k in range(n):
+        cp3[k] = cg[k]
+    
+    poly_composition_rule_rc(p2, p3, p2p3, cmono1, ctmp1, n)
+    poly_composition_rule_rc(p1, p2p3, ch, cmono2, ctmp2, n)
+    return np.array(h)
