@@ -45,11 +45,8 @@ def reciprocal_rule_r(f):
     """
     n = len(f)
     h = [0] * n
-    ker = [1,1]
-    coeffs = [1]
     h[0] = 1 / f[0]
-    for k in range(1,n):  
-        coeffs = np.convolve(ker, coeffs)        
+    for k in range(1,n):        
         w = np.dot(f[1:k+1], h[k-1::-1])
         h[k] = - w / f [0]       
     return h
