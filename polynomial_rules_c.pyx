@@ -14,6 +14,16 @@ import array
 # The result is symply the truncation at degree n of the convolution product 
 # of the lists f and g
 cdef void product_rule_rc(double[:] f,double[:] g, double[:] h, int n):
+    cdef int k, l
+    for k in range(n):     
+        h[k] = 0.0
+        for l in range(k+1):
+            h[k] += f[l] * g[k-l]
+            
+# Wrapper for product_rule_rc (use for test only)
+# https://docs.cython.org/en/latest/src/tutorial/array.html
+# https://docs.python.org/3/library/array.html
+def product_rule_r(ff, gg):
     """
     Higher order product rule. Given the lists f and g of function derivatives
         f = [f(x), f^[1](x), ... , f^[n](x)]
@@ -26,16 +36,6 @@ cdef void product_rule_rc(double[:] f,double[:] g, double[:] h, int n):
     
         a^[k](x) := (1/factorial(k)) * a^(k)(x)
     """
-    cdef int k, l
-    for k in range(n):     
-        h[k] = 0.0
-        for l in range(k+1):
-            h[k] += f[l] * g[k-l]
-            
-# Wrapper for product_rule_rc (use for test only)
-# https://docs.cython.org/en/latest/src/tutorial/array.html
-# https://docs.python.org/3/library/array.html
-def product_rule_r(ff, gg):
     assert len(ff) == len(gg), "Arrays should have same length"
     cdef array.array f = array.array('d', ff)
     cdef double[:] cf = f
@@ -50,15 +50,6 @@ def product_rule_r(ff, gg):
 
 # Derivaties of 1/f(x)
 cdef void reciprocal_rule_rc(double[:] f, double[:] h, int n):
-    """
-    Higher order derivatives of 1/f(x)
-        f = [f(x), f^[1](x), ... , f^[n](x)]
-    compute the list
-        h = [h(x), h^[1](x), ... , h^[n](x)]
-    where h(x) = 1/f(x) and a^[k] means
-    
-        a^[k](x) := (1/factorial(k)) * a^(k)(x)
-    """
     cdef int k, l
     h[0] = 1 / f[0]
     for k in range(1,n):  
@@ -71,6 +62,15 @@ cdef void reciprocal_rule_rc(double[:] f, double[:] h, int n):
 # https://docs.cython.org/en/latest/src/tutorial/array.html
 # https://docs.python.org/3/library/array.html
 def reciprocal_rule_r(ff):
+    """
+    Higher order derivatives of 1/f(x)
+        f = [f(x), f^[1](x), ... , f^[n](x)]
+    compute the list
+        h = [h(x), h^[1](x), ... , h^[n](x)]
+    where h(x) = 1/f(x) and a^[k] means
+    
+        a^[k](x) := (1/factorial(k)) * a^(k)(x)
+    """
     cdef array.array f = array.array('d', ff)
     cdef double[:] cf = f
     cdef array.array h = array.array('d', [0] * len(f))
@@ -83,6 +83,14 @@ def reciprocal_rule_r(ff):
 
 # Derivaties of f(x) / g(x)
 cdef void quotient_rule_rc(double[:] f,double[:] g, double[:] h, double[:] tmp, int n):
+    reciprocal_rule_rc(g, tmp, n)
+    product_rule_rc(f, tmp, h, n)
+
+
+# Wrapper for product_rule_rc (use for test only)
+# https://docs.cython.org/en/latest/src/tutorial/array.html
+# https://docs.python.org/3/library/array.html
+def quotient_rule_r(ff, gg):
     """
     Higher order quotient rule. Given the lists f and g of function derivatives
         f = [f(x), f^[1](x), ... , f^[n](x)]
@@ -95,14 +103,6 @@ cdef void quotient_rule_rc(double[:] f,double[:] g, double[:] h, double[:] tmp, 
     
         a^[k](x) := (1/factorial(k)) * a^(k)(x)
     """
-    reciprocal_rule_rc(g, tmp, n)
-    product_rule_rc(f, tmp, h, n)
-
-
-# Wrapper for product_rule_rc (use for test only)
-# https://docs.cython.org/en/latest/src/tutorial/array.html
-# https://docs.python.org/3/library/array.html
-def quotient_rule_r(ff, gg):
     assert len(ff) == len(gg), "Arrays should have same length"
     cdef array.array f = array.array('d', ff)
     cdef double[:] cf = f
@@ -136,6 +136,11 @@ cdef void poly_composition_rule_rc(double[:] f, double[:] g, double[:] h, double
     
     
 def poly_composition_rule_r(ff, gg):
+    """
+    Compute the composition of two polynomials of degree n up to degree n, i.e.
+    
+    h(x) = f(g(x)) mod O(x^(n+1))
+    """
     assert len(ff) == len(gg), "Arrays should have same length"
     cdef array.array f = array.array('d', ff)
     cdef double[:] cf = f
@@ -152,6 +157,8 @@ def poly_composition_rule_r(ff, gg):
     return np.array(h)
 
 
+# We do not write a C version for this one, since it is just calling the 
+# previousely defined functions
 def composition_rule_r(ff, gg):
     """    
     Compute the derivatives of f(g(x)) w.r.t. x given the

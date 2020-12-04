@@ -64,7 +64,7 @@ print(hc)
 print(hc-h)
 
 
-n = 200
+n = 20
 f = np.random.randn(n)
 g = np.random.randn(n)
 
