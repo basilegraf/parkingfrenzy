@@ -46,5 +46,11 @@ print(hc)
 print(hc-h)
 
 
+h  = poly.poly_composition_rule_r(f, g)
+hc = polyc.poly_composition_rule_r(f, g)
 
+print("poly composition rule")
+print(h)
+print(hc)
+print(hc-h)
 

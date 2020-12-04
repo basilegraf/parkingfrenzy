@@ -117,22 +117,39 @@ def quotient_rule_r(ff, gg):
     return np.array(h)
 
 
-# # h(x) = f(g(x)) mod O(x^(n+1))
-# def poly_composition_rule_rc(f, g):
-#     assert len(f) == len(g), "f and g must be of the same length"
-#     n = len(f) - 1
-#     h = [0] * (n + 1)
-#     # degree zero of result h
-#     h[0] = f[0]
-#     # mono: monomial g(x)^k
-#     mono = [0] * (n + 1) 
-#     mono[0] = 1 # g(x)^0
-#     # compute degrees 1,...,n
-#     for k in range(1, n + 1):
-#         mono = product_rule_r(mono, g)
-#         for q in range(n + 1):
-#             h[q] += f[k] * mono[q]
-#     return h
+# h(x) = f(g(x)) mod O(x^(n+1))
+cdef void poly_composition_rule_rc(double[:] f, double[:] g, double[:] h, double[:] mono, double[:] tmp, n):
+    cdef int k, l, q
+    # degree zero of result h
+    h[0] = f[0]
+    # mono: monomial g(x)^k
+    mono[0] = 1 # g(x)^0
+    for k in range(1,n):
+        mono[k] = 0  
+    # compute degrees 1,...,n
+    for k in range(1, n):
+        product_rule_rc(mono, g, tmp, n)
+        for l in range(n):
+            mono[l] = tmp[l]
+        for q in range(n):
+            h[q] += f[k] * mono[q]
+    
+    
+def poly_composition_rule_r(ff, gg):
+    assert len(ff) == len(gg), "Arrays should have same length"
+    cdef array.array f = array.array('d', ff)
+    cdef double[:] cf = f
+    cdef array.array g = array.array('d', gg)
+    cdef double[:] cg = g
+    cdef array.array h = array.array('d', [0] * len(f))
+    cdef double[:] ch = h
+    cdef array.array mono = array.array('d', [0] * len(f))
+    cdef double[:] cmono = mono
+    cdef array.array tmp = array.array('d', [0] * len(f))
+    cdef double[:] ctmp = tmp
+    cdef int n = len(f)
+    poly_composition_rule_rc(cf, cg, ch, cmono, ctmp, n)
+    return np.array(h)
 
 
 # def composition_rule_rc(f, g):
