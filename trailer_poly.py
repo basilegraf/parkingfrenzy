@@ -119,8 +119,7 @@ def cosine_sine_derivatives_r(aIn):
     cs[1,0] = np.sin(a[0])
     d = np.array([[0,-1],[1,0]])
     for k in range(len(a) - 1):
-        cs[:,k+1] = np.matmul(d, cs[:,k])
-        d = d / (k+1)
+        cs[:,k+1] = np.matmul(d, cs[:,k] / (k+1))
     # derivatives of cos(a(x))
     c = polyc.composition_rule_r(cs[0,:], a)
     # derivatives of sin(a(x))
@@ -152,6 +151,7 @@ if __name__ == "__main__":
     
     x1r, y1r = front_trailer_derivatives_r(xr, yr, Lk)
     print(poly_to_derivatives(x1r), poly_to_derivatives(y1r))
+    
     x1b, x2b = td.front_trailer_derivatives(x, y, Lk)
     print(x1b,x2b)
     
