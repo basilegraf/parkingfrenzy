@@ -119,7 +119,7 @@ def cosine_sine_derivatives_r(aIn):
     cs[1,0] = np.sin(a[0])
     d = np.array([[0,-1],[1,0]])
     for k in range(len(a) - 1):
-        cs[:,k+1] = np.matmul(d, cs[:,k] / (k+1))
+        cs[:,k+1] = np.matmul(d, cs[:,k]) / (k+1)
     # derivatives of cos(a(x))
     c = polyc.composition_rule_r(cs[0,:], a)
     # derivatives of sin(a(x))
@@ -135,15 +135,42 @@ def front_trailer_derivatives_r(xkIn, ykIn, Lk):
     xk1 = xk[:-1] + Lk * c
     yk1 = yk[:-1] + Lk * s
     return xk1, yk1
+
+
+def trailers_positions_r(x0In, y0In, Lin):
+    assert len(x0In) == len(y0In), "x0 and y0 must be of the same length"
+    assert len(Lin) + 1 == len(x0In), "L must have length len(x0) - 1"
+    x = np.asarray(x0In).copy()
+    y = np.asarray(y0In).copy()
+    L = np.asarray(Lin)
+    xk = np.zeros(len(x))
+    yk = np.zeros(len(y))
+    xdk = np.zeros(len(x) - 1)
+    ydk = np.zeros(len(y) - 1)   
+    xk[0] = x[0]
+    yk[0] = y[0]
+    xdk[0] = x[0]
+    ydk[0] = y[0]
+    for k in range(1, len(x)):
+        x,y = front_trailer_derivatives_r(x.copy(), y.copy(), L[k-1])
+        xk[k] = x[0]
+        yk[k] = y[0]
+        if len(x) > 1:
+            xdk[k] = x[1]
+            ydk[k] = y[1]
+    return xk, yk, xdk, ydk
     
 
 if __name__ == "__main__":
 
     import trailer_derivatives as td
     n = 5
-    x = np.random.rand(5)
-    y = np.random.rand(5)
-    Lk = 0.3
+    x = np.random.rand(n)
+    y = np.random.rand(n)
+    L = np.random.rand(n - 1)
+    
+    
+    Lk = L[0]
     
     xr = derivatives_to_poly(x)
     yr = derivatives_to_poly(y)
@@ -152,6 +179,15 @@ if __name__ == "__main__":
     x1r, y1r = front_trailer_derivatives_r(xr, yr, Lk)
     print(poly_to_derivatives(x1r), poly_to_derivatives(y1r))
     
-    x1b, x2b = td.front_trailer_derivatives(x, y, Lk)
-    print(x1b,x2b)
+    x1b, y1b = td.front_trailer_derivatives(x, y, Lk)
+    print(x1b,y1b)
+    
+    xka, yka, xdka, ydka = trailers_positions_r(xr,yr, L)
+    xkb, ykb, xdkb, ydkb = td.trailers_positions(x,y, L)
+    
+    print("xka", xka)
+    print("xkb", xkb)
+    
+    print("yka", yka)
+    print("ykb", ykb)
     

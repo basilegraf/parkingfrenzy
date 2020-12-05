@@ -86,6 +86,33 @@ def front_trailer_derivatives(xkIn, ykIn, Lk):
     xk1 = xk[:-1] + Lk * c
     yk1 = yk[:-1] + Lk * s
     return xk1, yk1
+
+def trailers_positions(x0In, y0In, Lin):
+    assert len(x0In) == len(y0In), "x0 and y0 must be of the same length"
+    assert len(Lin) + 1 == len(x0In), "L must have length len(x0) - 1"
+    x = np.asarray(x0In).copy()
+    y = np.asarray(y0In).copy()
+    L = np.asarray(Lin)
+    xk = np.zeros(len(x))
+    yk = np.zeros(len(y))
+    xdk = np.zeros(len(x) - 1)
+    ydk = np.zeros(len(y) - 1)   
+    xk[0] = x[0]
+    yk[0] = y[0]
+    xdk[0] = x[0]
+    ydk[0] = y[0]
+    for k in range(1, len(x)):
+        x,y = front_trailer_derivatives(x.copy(), y.copy(), L[k-1])
+        xk[k] = x[0]
+        yk[k] = y[0]
+        if len(x) > 1:
+            xdk[k] = x[1]
+            ydk[k] = y[1]
+    return xk, yk, xdk, ydk
+        
+            
+        
+        
     
     
 
