@@ -23,13 +23,13 @@ except:
 
 
 n = 4
-m = 3
+m = 2
 p = n+m
 tMax = 1
 lx = 1
 ly = 1
 L = 1 * np.ones(n)
-tt=np.linspace(0,tMax,100)
+tt=np.linspace(0,tMax,1000)
 
 # n+m-th  spline coeff
 beu = tMax * np.ones(n+m)
@@ -49,7 +49,7 @@ plt.grid(True)
 bb=[b]
 for k in range( n):
     bb.append(bb[-1].derivative(1))
-    #bb[-1].c *= max(n + 1 -k, 1)
+    bb[-1].c /= max(1, k)
     
 
     
@@ -73,8 +73,8 @@ TX = 0*X
 TY = 0*Y
 for k in range(len(tt)):
     TX[:,k], TY[:,k], vx, vy = tp.trailers_positions_r(
-        tp.derivatives_to_poly(X[:,k]), 
-        tp.derivatives_to_poly(Y[:,k]), L)
+        X[:,k], 
+        Y[:,k], L)
     
 fig, ax = plt.subplots(1,1)
 ax.plot(TX.transpose(),TY.transpose())
