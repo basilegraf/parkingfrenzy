@@ -59,22 +59,53 @@ if False:
         h=plt.figure
         plt.plot(tt, bb[k](tt))
         plt.show()
+ 
+# Simple version
+def constTailSpeed():
+    Y = np.zeros((len(bb), len(tt)))
+    for k in range(len(bb)):
+        Y[k,:] = bb[k](tt)
+        
     
-Y = np.zeros((len(bb), len(tt)))
-for k in range(len(bb)):
-    Y[k,:] = bb[k](tt)
+    X = np.zeros((len(bb), len(tt)))
+    X[0,:] = np.linspace(0,lx,len(tt))
+    X[1,:] = lx * np.ones(len(tt))
     
+    TX = 0*X
+    TY = 0*Y
+    for k in range(len(tt)):
+        TX[:,k], TY[:,k], vx, vy = tp.trailers_positions_r(
+            X[:,k], 
+            Y[:,k], L)
+    return TX, TY
 
-X = np.zeros((len(bb), len(tt)))
-X[0,:] = np.linspace(0,lx,len(tt))
-X[1,:] = lx * np.ones(len(tt))
+# Constant speed on head
+def constHeadSpeed(vHead):
+    TX = np.zeros((len(bb), 0))
+    TY = np.zeros((len(bb), 0))
+    t=0
+    x = np.zeros((len(bb)))
+    y = np.zeros((len(bb)))
+    cont = True
+    while cont: # t <= tMax:
+        if t >= tMax:
+            t = tMax
+            cont = False
+        x[0] = lx * t / tMax # x pos
+        x[1] = lx / tMax     # x 1st derivative
+        for k in range(len(bb)):
+            y[k] = bb[k](t)
+        tx, ty, vx, vy = tp.trailers_positions_r(
+            x, y, L)
+        t += vHead / np.sqrt(vx[-1]**2 + vy[-1]**2)
+        TX = np.append(TX, np.array([tx]).transpose(), axis = 1)
+        TY = np.append(TY, np.array([ty]).transpose(), axis = 1)
+    return TX, TY
+    
+        
+        
 
-TX = 0*X
-TY = 0*Y
-for k in range(len(tt)):
-    TX[:,k], TY[:,k], vx, vy = tp.trailers_positions_r(
-        X[:,k], 
-        Y[:,k], L)
+TX, TY = constHeadSpeed(0.1)
     
 fig, ax = plt.subplots(1,1)
 ax.plot(TX.transpose(),TY.transpose())
