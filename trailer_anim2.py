@@ -11,6 +11,7 @@ import scipy.interpolate as interp
 import numpy as np
 import numpy.matlib
 import matplotlib.pyplot as plt
+import scipy.integrate as integrate
 from matplotlib.animation import FuncAnimation
 
 # Use qt for animations
@@ -22,7 +23,7 @@ except:
     pass
 
 
-n = 4
+n = 5
 m = 2
 p = n+m
 tMax = 1
@@ -123,15 +124,26 @@ def constHeadSpeed(vHead):
         txOld, tyOld, vxOld, vyOld = tx, ty, vx, vy
     return TX, TY
     
-        
-        
+ 
+def pathDerivative(tIn):
+    t = max(0, min(tIn, tMax))
+    x = np.zeros((len(bb)))
+    x[0] = t
+    x[1] = lx / tMax     # x 1st derivative
+    y = np.zeros((len(bb)))
+    for k in range(len(bb)):
+        y[k] = bb[k](t)
+    tx, ty, vx, vy = tp.trailers_positions_r(x, y, L)   
+    return 1.0 / np.sqrt(vx[-1]**2 + vy[-1]**2)    
 
-TX, TY = constHeadSpeed(.2)
-    
-fig, ax = plt.subplots(1,1)
-ax.plot(TX.transpose(),TY.transpose())
-ax.axis('equal')
-plt.show()
+
+if False:
+    TX, TY = constHeadSpeed(.2)
+        
+    fig, ax = plt.subplots(1,1)
+    ax.plot(TX.transpose(),TY.transpose())
+    ax.axis('equal')
+    plt.show()
 
 
 
@@ -161,18 +173,30 @@ class animTrailers:
        
     def anim(self):
         return FuncAnimation(self.fig, self.updateTrailers, self.frames, init_func=self.initAnim, blit=False, repeat_delay=1000, interval=50)
-        
-nRep = 3
-TXX = np.concatenate((
-    np.matlib.repmat(TX[:,:1],1,nRep),
-    TX,
-    np.matlib.repmat(TX[:,-1:],1,nRep)), axis=1)
-TYY = np.concatenate((
-    np.matlib.repmat(TY[:,:1],1,nRep),
-    TY,
-    np.matlib.repmat(TY[:,-1:],1,nRep)), axis=1)
-anim = animTrailers(TXX, TYY)
-aa = anim.anim()
+ 
+if False:       
+    nRep = 3
+    TXX = np.concatenate((
+        np.matlib.repmat(TX[:,:1],1,nRep),
+        TX,
+        np.matlib.repmat(TX[:,-1:],1,nRep)), axis=1)
+    TYY = np.concatenate((
+        np.matlib.repmat(TY[:,:1],1,nRep),
+        TY,
+        np.matlib.repmat(TY[:,-1:],1,nRep)), axis=1)
+    anim = animTrailers(TXX, TYY)
+    aa = anim.anim()
 
 # if saveAnimation:
 #     aa.save('beforeOptim.gif', writer='imagemagick', fps=25)
+
+tSpan = [0,1e6]
+x0 = [0]
+fInt = lambda tt, xx : pathDerivative(xx)
+fEvent = lambda tt, xx : xx[0]-lx
+fEvent.terminal = True
+ivpSol = integrate.solve_ivp(fInt, tSpan, x0, events = fEvent, rtol=1.0e-5, atol=1.0e-5)#, max_step = 0.01)
+
+fig, ax = plt.subplots(1,1)
+ax.plot(ivpSol.t, ivpSol.y[0,:], '-*')
+ax.grid(True)
