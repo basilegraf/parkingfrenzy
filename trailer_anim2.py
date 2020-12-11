@@ -93,7 +93,8 @@ class animTrailers:
         
     def initAnim(self):
         self.ax.clear()
-        self.ln, = self.ax.plot(self.TX[:,-1], self.TY[:,-1])
+        self.ax.plot(TX.transpose(),TY.transpose())
+        self.ln, = self.ax.plot(self.TX[:,-1], self.TY[:,-1], 'o-',linewidth=3, color='black')
         self.ax.set_aspect(aspect='equal', adjustable='box')
         self.ax.set_xlim(left=np.min(self.TX), right=np.max(self.TX))
         self.ax.set_ylim(bottom=np.min(self.TY), top=np.max(self.TY))
