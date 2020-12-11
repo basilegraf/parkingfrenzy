@@ -83,29 +83,50 @@ def constTailSpeed():
 def constHeadSpeed(vHead):
     TX = np.zeros((len(bb), 0))
     TY = np.zeros((len(bb), 0))
-    t=0
+    t = 0
     x = np.zeros((len(bb)))
+    x[1] = lx / tMax     # x 1st derivative
     y = np.zeros((len(bb)))
+    
+    txOld, tyOld, vxOld, vyOld = tp.trailers_positions_r(x, y, L)
+    TX = np.append(TX, np.array([txOld]).transpose(), axis = 1)
+    TY = np.append(TY, np.array([tyOld]).transpose(), axis = 1)
     cont = True
     while cont: # t <= tMax:
+        # stop condition
+        fac = 1.0
         if t >= tMax:
             t = tMax
+            fac = 0.0
             cont = False
-        x[0] = lx * t / tMax # x pos
-        x[1] = lx / tMax     # x 1st derivative
-        for k in range(len(bb)):
-            y[k] = bb[k](t)
-        tx, ty, vx, vy = tp.trailers_positions_r(
-            x, y, L)
-        t += vHead / np.sqrt(vx[-1]**2 + vy[-1]**2)
+        
+        deltat = vHead / np.sqrt(vxOld[-1]**2 + vyOld[-1]**2)
+        stepSizeOk = False
+        
+        while not(stepSizeOk):
+            tNext = t + fac * deltat
+            x[0] = lx * tNext / tMax # x pos
+            x[1] = lx / tMax     # x 1st derivative
+            for k in range(len(bb)):
+                y[k] = bb[k](tNext)
+            tx, ty, vx, vy = tp.trailers_positions_r(
+                x, y, L)
+            dp = np.sqrt((tx[-2]-txOld[-2])**2 + (ty[-2]-tyOld[-2])**2)
+            if dp >  vHead:
+                fac *= 0.9
+            else:
+                stepSizeOk = True
+                t = tNext
         TX = np.append(TX, np.array([tx]).transpose(), axis = 1)
         TY = np.append(TY, np.array([ty]).transpose(), axis = 1)
+        
+        txOld, tyOld, vxOld, vyOld = tx, ty, vx, vy
     return TX, TY
     
         
         
 
-TX, TY = constHeadSpeed(0.1)
+TX, TY = constHeadSpeed(.2)
     
 fig, ax = plt.subplots(1,1)
 ax.plot(TX.transpose(),TY.transpose())
