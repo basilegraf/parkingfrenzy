@@ -5,6 +5,7 @@ Created on Sat Dec  5 17:04:22 2020
 
 @author: basile
 """
+import time
 import math
 import trailer_poly as tp
 import scipy.interpolate as interp
@@ -23,7 +24,7 @@ except:
     pass
 
 
-n = 5
+n = 10
 m = 2
 p = n+m
 tMax = 1
@@ -190,13 +191,53 @@ if False:
 # if saveAnimation:
 #     aa.save('beforeOptim.gif', writer='imagemagick', fps=25)
 
-tSpan = [0,1e6]
+tSpan = [0,1000]
+tEval = np.linspace(0,1000,10000)
 x0 = [0]
 fInt = lambda tt, xx : pathDerivative(xx)
 fEvent = lambda tt, xx : xx[0]-lx
 fEvent.terminal = True
-ivpSol = integrate.solve_ivp(fInt, tSpan, x0, events = fEvent, rtol=1.0e-5, atol=1.0e-5)#, max_step = 0.01)
+
+tComp = time.time()
+ivpSol = integrate.solve_ivp(fInt, tSpan, x0, events = fEvent, rtol=1.0e-5, atol=1.0e-5, t_eval=tEval)#, max_step = 0.01)
+tComp = time.time() - tComp
+print("Computation time = %f" % tComp)
+
+
 
 fig, ax = plt.subplots(1,1)
 ax.plot(ivpSol.t, ivpSol.y[0,:], '-*')
 ax.grid(True)
+
+
+# Fixed points
+def fixedPoints(t):
+    TX = np.zeros((len(bb), len(t)))
+    TY = np.zeros((len(bb), len(t)))
+    x = np.zeros((len(bb)))
+    x[1] = lx / tMax     # x 1st derivative
+    y = np.zeros((len(bb)))        
+    for k in range(len(t)):
+        x[0] = lx * t[k] / tMax # x pos
+        x[1] = lx / tMax     # x 1st derivative
+        for l in range(len(bb)):
+            y[l] = bb[l](t[k])
+        tx, ty, vx, vy = tp.trailers_positions_r(x, y, L)
+        TX[:,k] = tx
+        TY[:,k] = ty
+    return TX, TY
+
+TX, TY = fixedPoints(ivpSol.y[0,:])
+
+if True:       
+    nRep = 3
+    TXX = np.concatenate((
+        np.matlib.repmat(TX[:,:1],1,nRep),
+        TX,
+        np.matlib.repmat(TX[:,-1:],1,nRep)), axis=1)
+    TYY = np.concatenate((
+        np.matlib.repmat(TY[:,:1],1,nRep),
+        TY,
+        np.matlib.repmat(TY[:,-1:],1,nRep)), axis=1)
+    anim = animTrailers(TXX, TYY)
+    aa = anim.anim()
