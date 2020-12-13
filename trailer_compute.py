@@ -159,3 +159,10 @@ if True:
 
 if False:
     aa.save('anim.gif', writer='imagemagick', fps=25)
+    
+if True:
+    fileName = "data/SXSY_n%d.npy" % n
+    with open(fileName, 'wb') as f:
+        np.save(f, SX)
+        np.save(f, SY)
+        f.close()
