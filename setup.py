@@ -4,5 +4,5 @@ from setuptools import setup
 from Cython.Build import cythonize
 
 setup(
-    ext_modules = cythonize(["cfuns.pyx", "polynomial_rules_c.pyx"], annotate=True)
+    ext_modules = cythonize(["cfuns.pyx", "power_series_rules_c.pyx"], annotate=True)
 )

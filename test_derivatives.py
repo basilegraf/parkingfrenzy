@@ -6,12 +6,13 @@ Created on Tue Nov 24 20:49:59 2020
 @author: basile
 """
 
+#import pyximport; pyximport.install()
+
 import numpy as np
 import sympy as sp
 
-import product_quotient_rules as proquo
-import product_quotient_rules_rescaled as proquo_r
-import faa_di_bruno as bruno
+import derivatives_rules as proquo
+import power_series_rules as proquo_r
 import truncated_power_series as trunc
 
 def nest_list(f,x,n):
@@ -99,9 +100,9 @@ f_at_g = list(map(lambda y : y.subs(x,g[0]), f))
 f_of_g1 = derivatives_list(f_at_g[0], x, n)
 
 # n-th devivative of f(g(x)) w.r.t to x using Faa di Bruno
-f_of_g2_n = bruno.composition_rule_nth(f_at_g[1:], g[1:])
+f_of_g2_n = proquo.composition_rule_nth(f_at_g[1:], g[1:])
 # all devivatives of f(g(x)) w.r.t to x using Faa di Bruno
-f_of_g2 = bruno.composition_rule(f_at_g, g)
+f_of_g2 = proquo.composition_rule(f_at_g, g)
 print('n-th composite derivative check (Faa di Bruno)     : ', sp.simplify(f_of_g1[-1]-f_of_g2_n))
 check_f_of_g = list(map(lambda s1,s2 : sp.simplify(s1-s2), f_of_g1, f_of_g2))
 print('Composition rule check (Faa di Bruno)              : ', check_f_of_g)

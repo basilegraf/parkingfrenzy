@@ -29,16 +29,10 @@ product and quotient rules
 """
 
 import numpy as np
-import sympy as sp
 
-import product_quotient_rules as proquo
-import faa_di_bruno as bruno
-import truncated_power_series as trunc
+import pyximport; pyximport.install()
+import power_series_rules_c as polyc
 
-#import pyximport; pyximport.install()
-import polynomial_rules_c as polyc
-import product_quotient_rules_rescaled as poly
-import math
 
 
 def derivatives_to_poly(xIn):

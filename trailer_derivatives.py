@@ -29,10 +29,8 @@ product and quotient rules
 """
 
 import numpy as np
-import sympy as sp
 
-import product_quotient_rules as proquo
-import faa_di_bruno as bruno
+import derivatives_rules as proquo
 import truncated_power_series as trunc
 
 

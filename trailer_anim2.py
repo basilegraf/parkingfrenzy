@@ -7,7 +7,7 @@ Created on Sat Dec  5 17:04:22 2020
 """
 import time
 import math
-import trailer_poly as tp
+import trailer_power_series as tp
 import scipy.interpolate as interp
 import numpy as np
 import numpy.matlib
@@ -24,7 +24,7 @@ except:
     pass
 
 
-n = 10
+n = 5
 m = 2
 p = n+m
 tMax = 1
