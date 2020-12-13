@@ -24,175 +24,66 @@ except:
     pass
 
 
-n = 5
-m = 2
-p = n+m
-tMax = 1
-lx = 1
-ly = 1
-L = 1 * np.ones(n)
-tt=np.linspace(0,tMax,1000)
+n = 5 # number of links (trailers)
+m = 2 # additional smoothness
+p = n+m # spline order 
+sMax = 1 # path parameter goes from 0 to sMax
+lx = 1 # distance covered in x while maneuvring
+ly = 1 # distance covered in y while maneuvring
+L = 1 * np.ones(n) # link lengths
+
 
 # n+m-th  spline coeff
-beu = tMax * np.ones(n+m)
-t = np.concatenate((np.zeros(n+m), np.linspace(0,tMax,p+1), beu))
+knots = np.concatenate((np.zeros(n+m), np.linspace(0,sMax,p+1), sMax * np.ones(n+m)))
 c = np.concatenate((np.zeros(n+m), ly*np.ones(p), ly*np.ones(n+m)))
 
-b = interp.BSpline(t, c, n+m)
+# B-Spline for the sigmoid
+b = interp.BSpline(knots, c, n+m)
 
-plt.plot(tt, b.derivative(0)(tt))
+# show the sigmoid function
+sVals = np.linspace(0,sMax,1000)
+plt.plot(sVals, b.derivative(0)(sVals))
 plt.grid(True)
-    
 
-
-
-
-
+# spline derivatives 0 to n
 bb=[b]
-for k in range( n):
+for k in range(n):
     bb.append(bb[-1].derivative(1))
     bb[-1].c /= max(1, k)
     
-
     
-    
-if False:
-    for k in range(len(bb)):
-        h=plt.figure
-        plt.plot(tt, bb[k](tt))
-        plt.show()
- 
-# Simple version
-def constTailSpeed():
-    Y = np.zeros((len(bb), len(tt)))
-    for k in range(len(bb)):
-        Y[k,:] = bb[k](tt)
-        
-    
-    X = np.zeros((len(bb), len(tt)))
-    X[0,:] = np.linspace(0,lx,len(tt))
-    X[1,:] = lx * np.ones(len(tt))
-    
-    TX = 0*X
-    TY = 0*Y
-    for k in range(len(tt)):
-        TX[:,k], TY[:,k], vx, vy = tp.trailers_positions_r(
-            X[:,k], 
-            Y[:,k], L)
-    return TX, TY
-
-# Constant speed on head
-def constHeadSpeed(vHead):
-    TX = np.zeros((len(bb), 0))
-    TY = np.zeros((len(bb), 0))
-    t = 0
+# compute derivative of (n-1)-th link position w.r.t. to path parameter s 
+def pathDerivative(sIn):
+    s = max(0, min(sIn, sMax))
     x = np.zeros((len(bb)))
-    x[1] = lx / tMax     # x 1st derivative
-    y = np.zeros((len(bb)))
-    
-    txOld, tyOld, vxOld, vyOld = tp.trailers_positions_r(x, y, L)
-    TX = np.append(TX, np.array([txOld]).transpose(), axis = 1)
-    TY = np.append(TY, np.array([tyOld]).transpose(), axis = 1)
-    cont = True
-    while cont: # t <= tMax:
-        # stop condition
-        fac = 1.0
-        if t >= tMax:
-            t = tMax
-            fac = 0.0
-            cont = False
-        
-        deltat = vHead / np.sqrt(vxOld[-1]**2 + vyOld[-1]**2)
-        stepSizeOk = False
-        
-        while not(stepSizeOk):
-            tNext = t + fac * deltat
-            x[0] = lx * tNext / tMax # x pos
-            x[1] = lx / tMax     # x 1st derivative
-            for k in range(len(bb)):
-                y[k] = bb[k](tNext)
-            tx, ty, vx, vy = tp.trailers_positions_r(
-                x, y, L)
-            dp = np.sqrt((tx[-2]-txOld[-2])**2 + (ty[-2]-tyOld[-2])**2)
-            if dp >  vHead:
-                fac *= 0.9
-            else:
-                stepSizeOk = True
-                t = tNext
-        TX = np.append(TX, np.array([tx]).transpose(), axis = 1)
-        TY = np.append(TY, np.array([ty]).transpose(), axis = 1)
-        
-        txOld, tyOld, vxOld, vyOld = tx, ty, vx, vy
-    return TX, TY
-    
- 
-def pathDerivative(tIn):
-    t = max(0, min(tIn, tMax))
-    x = np.zeros((len(bb)))
-    x[0] = t
-    x[1] = lx / tMax     # x 1st derivative
+    x[0] = s
+    x[1] = lx / sMax     # x 1st derivative
     y = np.zeros((len(bb)))
     for k in range(len(bb)):
-        y[k] = bb[k](t)
-    tx, ty, vx, vy = tp.trailers_positions_r(x, y, L)   
+        y[k] = bb[k](s)
+    sx, sy, vx, vy = tp.trailers_positions_r(x, y, L)   
     return 1.0 / np.sqrt(vx[-1]**2 + vy[-1]**2)    
 
 
-if False:
-    TX, TY = constHeadSpeed(.2)
-        
-    fig, ax = plt.subplots(1,1)
-    ax.plot(TX.transpose(),TY.transpose())
-    ax.axis('equal')
-    plt.show()
+# Solve ode to get s(t) such that (n-1)-th link speed is constant
 
+# first solve with "low" accuracy to determine the (n-1)-th path length
+tSpan = [0.0, 1.0e6]
+s0 = [0]
+fInt = lambda tv, sv : pathDerivative(sv)
+fEvent = lambda tv, sv : sv[0] - sMax
+fEvent.terminal = True
 
+tComp = time.time()
+ivpSol = integrate.solve_ivp(fInt, tSpan, s0, events = fEvent)
+tComp = time.time() - tComp
+sPathMax = ivpSol.t[-1]
+print("Path length = %f, computation time = %f" % (sPathMax, tComp))
 
-
-class animTrailers:
-    def __init__(self, TX, TY):
-        self.fig, self.ax = plt.subplots()
-        self.TX = TX
-        self.TY = TY
-        self.frames = range(TX.shape[1])
-        
-    def initAnim(self):
-        self.ax.clear()
-        self.ax.plot(TX.transpose(),TY.transpose())
-        self.ln, = self.ax.plot(self.TX[:,-1], self.TY[:,-1], 'o-',linewidth=3, color='black')
-        self.ax.set_aspect(aspect='equal', adjustable='box')
-        self.ax.set_xlim(left=np.min(self.TX), right=np.max(self.TX))
-        self.ax.set_ylim(bottom=np.min(self.TY), top=np.max(self.TY))
-        #self.ax.set_xbound(lower=-5, upper=5)
-        #self.ax.set_ybound(lower=-0.5, upper=8)
-        self.ax.grid(b=True)
-        
-    def updateTrailers(self, frame):
-        self.ln.set_xdata(self.TX[:, -frame])
-        self.ln.set_ydata(self.TY[:, -frame])
-        #self.ln, = self.ax.plot(self.TX[:,frame], self.TY[:,frame])
-       
-    def anim(self):
-        return FuncAnimation(self.fig, self.updateTrailers, self.frames, init_func=self.initAnim, blit=False, repeat_delay=1000, interval=50)
- 
-if False:       
-    nRep = 3
-    TXX = np.concatenate((
-        np.matlib.repmat(TX[:,:1],1,nRep),
-        TX,
-        np.matlib.repmat(TX[:,-1:],1,nRep)), axis=1)
-    TYY = np.concatenate((
-        np.matlib.repmat(TY[:,:1],1,nRep),
-        TY,
-        np.matlib.repmat(TY[:,-1:],1,nRep)), axis=1)
-    anim = animTrailers(TXX, TYY)
-    aa = anim.anim()
-
-# if saveAnimation:
-#     aa.save('beforeOptim.gif', writer='imagemagick', fps=25)
-
-tSpan = [0,1000]
-tEval = np.linspace(0,1000,10000)
+# Recompute path by requiring evenly sampled (in time) path postions
+tSpan = [0, 2.0 * sPathMax]
+dl = 0.1 * np.sqrt(lx**2 + ly**2)
+tEval = np.linspace(0, tSpan[1], int(round(tSpan[1] / dl)))
 x0 = [0]
 fInt = lambda tt, xx : pathDerivative(xx)
 fEvent = lambda tt, xx : xx[0]-lx
@@ -201,43 +92,70 @@ fEvent.terminal = True
 tComp = time.time()
 ivpSol = integrate.solve_ivp(fInt, tSpan, x0, events = fEvent, rtol=1.0e-5, atol=1.0e-5, t_eval=tEval)#, max_step = 0.01)
 tComp = time.time() - tComp
-print("Computation time = %f" % tComp)
+print("Path computation. Computation time = %f" % tComp)
 
 
 
+class animTrailers:
+    def __init__(self, SX, SY):
+        self.fig, self.ax = plt.subplots()
+        self.SX = SX
+        self.SY = SY
+        self.frames = range(SX.shape[1])
+        
+    def initAnim(self):
+        self.ax.clear()
+        self.ax.plot(SX.transpose(),SY.transpose())
+        self.ln, = self.ax.plot(self.SX[:,-1], self.SY[:,-1], 'o-',linewidth=3, color='black')
+        self.ax.set_aspect(aspect='equal', adjustable='box')
+        self.ax.set_xlim(left=np.min(self.SX), right=np.max(self.SX))
+        self.ax.set_ylim(bottom=np.min(self.SY), top=np.max(self.SY))
+        #self.ax.set_xbound(lower=-5, upper=5)
+        #self.ax.set_ybound(lower=-0.5, upper=8)
+        self.ax.grid(b=True)
+        
+    def updateTrailers(self, frame):
+        self.ln.set_xdata(self.SX[:, -frame])
+        self.ln.set_ydata(self.SY[:, -frame])
+        #self.ln, = self.ax.plot(self.TX[:,frame], self.TY[:,frame])
+       
+    def anim(self):
+        return FuncAnimation(self.fig, self.updateTrailers, self.frames, init_func=self.initAnim, blit=False, repeat_delay=1000, interval=50)
+ 
+# Remove non-increasing path parameter values and add some zeros and sMax values
+# at both ends
+idx = np.concatenate(([True], np.diff(ivpSol.y[0,:])>0))
+sValues = np.concatenate(([0,0,0], ivpSol.y[0,idx], [sMax,sMax,sMax,sMax]))
+
+# Show path samples sValues
 fig, ax = plt.subplots(1,1)
-ax.plot(ivpSol.t, ivpSol.y[0,:], '-*')
+ax.plot(sValues, '-*')
 ax.grid(True)
 
 
-# Fixed points
-def fixedPoints(t):
-    TX = np.zeros((len(bb), len(t)))
-    TY = np.zeros((len(bb), len(t)))
+# Compute all trailer positions from path derivatives at all sValues
+def trailerPositions(s):
+    SX = np.zeros((len(bb), len(s)))
+    SY = np.zeros((len(bb), len(s)))
     x = np.zeros((len(bb)))
-    x[1] = lx / tMax     # x 1st derivative
+    x[1] = lx / sMax     # x 1st derivative
     y = np.zeros((len(bb)))        
-    for k in range(len(t)):
-        x[0] = lx * t[k] / tMax # x pos
-        x[1] = lx / tMax     # x 1st derivative
+    for k in range(len(s)):
+        x[0] = lx * s[k] / sMax # x pos
+        x[1] = lx / sMax     # x 1st derivative
         for l in range(len(bb)):
-            y[l] = bb[l](t[k])
-        tx, ty, vx, vy = tp.trailers_positions_r(x, y, L)
-        TX[:,k] = tx
-        TY[:,k] = ty
-    return TX, TY
+            y[l] = bb[l](s[k])
+        sx, sy, vx, vy = tp.trailers_positions_r(x, y, L)
+        SX[:,k] = sx
+        SY[:,k] = sy
+    return SX, SY
 
-TX, TY = fixedPoints(ivpSol.y[0,:])
+SX, SY = trailerPositions(sValues)
+
 
 if True:       
-    nRep = 3
-    TXX = np.concatenate((
-        np.matlib.repmat(TX[:,:1],1,nRep),
-        TX,
-        np.matlib.repmat(TX[:,-1:],1,nRep)), axis=1)
-    TYY = np.concatenate((
-        np.matlib.repmat(TY[:,:1],1,nRep),
-        TY,
-        np.matlib.repmat(TY[:,-1:],1,nRep)), axis=1)
-    anim = animTrailers(TXX, TYY)
+    anim = animTrailers(SX, SY)
     aa = anim.anim()
+
+if False:
+    aa.save('anim.gif', writer='imagemagick', fps=25)
