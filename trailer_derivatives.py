@@ -30,8 +30,8 @@ product and quotient rules
 
 import numpy as np
 
-import derivatives_rules as proquo
-import truncated_power_series as trunc
+import derivatives_rules as derrle
+import derivatives_composition_rule as dercomp
 
 
 
@@ -44,15 +44,15 @@ def angle_derivatives(xIn, yIn):
     a0 = np.asarray([np.arctan2(y[1], x[1])])
     if len(x) > 2:
         # derivatives of x'*y''
-        xdydd = np.asarray(proquo.product_rule(x[1:-1], y[2:]))
+        xdydd = np.asarray(derrle.product_rule(x[1:-1], y[2:]))
         # derivatives of x''*y'
-        xddyd = np.asarray(proquo.product_rule(x[2:], y[1:-1]))
+        xddyd = np.asarray(derrle.product_rule(x[2:], y[1:-1]))
         # derivative of x'**2
-        xdxd = np.asarray(proquo.product_rule(x[1:-1], x[1:-1]))
+        xdxd = np.asarray(derrle.product_rule(x[1:-1], x[1:-1]))
         # derivative of y'**2
-        ydyd = np.asarray(proquo.product_rule(y[1:-1], y[1:-1]))
+        ydyd = np.asarray(derrle.product_rule(y[1:-1], y[1:-1]))
         # derivatives of a'
-        ad = np.asarray(proquo.quotient_rule(xdydd - xddyd, xdxd + ydyd))
+        ad = np.asarray(derrle.quotient_rule(xdydd - xddyd, xdxd + ydyd))
         # derivatives of a including a0
         a = np.concatenate((a0, ad))
     else:
@@ -70,9 +70,9 @@ def cosine_sine_derivatives(aIn):
     for k in range(len(a) - 1):
         cs[:,k+1] = np.matmul(d, cs[:,k])
     # derivatives of cos(a(x))
-    c = np.asarray(trunc.composition_rule(cs[0,:], a))
+    c = np.asarray(dercomp.composition_rule(cs[0,:], a))
     # derivatives of sin(a(x))
-    s = np.asarray(trunc.composition_rule(cs[1,:], a))
+    s = np.asarray(dercomp.composition_rule(cs[1,:], a))
     return c, s
         
 # Derivatives of x[k+1] y[k+1] from derivatives of x[k],y[k] and length L[k]

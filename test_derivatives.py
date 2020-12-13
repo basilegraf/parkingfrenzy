@@ -11,9 +11,9 @@ Created on Tue Nov 24 20:49:59 2020
 import numpy as np
 import sympy as sp
 
-import derivatives_rules as proquo
-import power_series_rules as proquo_r
-import truncated_power_series as trunc
+import derivatives_rules as derrle
+import power_series_rules as psrle
+import derivatives_composition_rule as dercomp
 
 def nest_list(f,x,n):
     fx = [0] * (n+1)
@@ -53,13 +53,13 @@ g = derivatives_list(sp.ln(x), x, n)
 # Compute product derivatives with sympy directly
 fg1 = derivatives_list(f[0] * g[0], x, n)
 # Compute product derivatives using product_rule()
-fg2 = proquo.product_rule(f,g)
+fg2 = derrle.product_rule(f,g)
 check_fg = list(map(lambda s1,s2 : sp.simplify(s1-s2), fg1, fg2))
 print('Product rule check: ', check_fg)
 
 # Rescaled product rule
 fgr = retrieve_derivatives(
-    proquo_r.product_rule_r(rescale_derivatives(f), rescale_derivatives(g)))
+    psrle.product_rule_r(rescale_derivatives(f), rescale_derivatives(g)))
 check_fgr = list(map(lambda s1,s2 : sp.simplify(s1-s2), fg1, fgr))
 print('Product rule check rescaled: ', check_fgr)
 
@@ -67,13 +67,13 @@ print('Product rule check rescaled: ', check_fgr)
 # Compute reciprocal derivatives with sympy directly
 rf1 = derivatives_list(1/f[0], x, n)
 # Compute product derivatives using product_rule()
-rf2 = proquo.reciprocal_rule(f)
+rf2 = derrle.reciprocal_rule(f)
 check_rf = list(map(lambda s1,s2 : sp.simplify(s1-s2), rf1, rf2))
 print('Reciprocal rule check: ', check_rf)
 
 # Rescaled reciprocal rule
 rfr = retrieve_derivatives(
-    proquo_r.reciprocal_rule_r(rescale_derivatives(f)))
+    psrle.reciprocal_rule_r(rescale_derivatives(f)))
 check_rfr = list(map(lambda s1,s2 : sp.simplify(s1-s2), rf1, rfr))
 print('Reciprocal rule check rescaled: ', check_rfr)
 
@@ -82,13 +82,13 @@ print('Reciprocal rule check rescaled: ', check_rfr)
 # Compute quotient derivatives with sympy directly
 qfg1 = derivatives_list(f[0] / g[0], x, n)
 # Compute quotient derivatives using quotient_rule()
-qfg2 = proquo.quotient_rule(f,g)
+qfg2 = derrle.quotient_rule(f,g)
 check_qfg = list(map(lambda s1,s2 : sp.simplify(s1-s2), qfg1, qfg2))
 print('Quotient rule check: ', check_qfg)
 
 # Rescaled quotient rule
 qfgr = retrieve_derivatives(
-    proquo_r.quotient_rule_r(rescale_derivatives(f), rescale_derivatives(g)))
+    psrle.quotient_rule_r(rescale_derivatives(f), rescale_derivatives(g)))
 check_qfgr = list(map(lambda s1,s2 : sp.simplify(s1-s2), qfg1, qfgr))
 print('Quotient rule check rescaled: ', check_qfgr)
 
@@ -100,22 +100,22 @@ f_at_g = list(map(lambda y : y.subs(x,g[0]), f))
 f_of_g1 = derivatives_list(f_at_g[0], x, n)
 
 # n-th devivative of f(g(x)) w.r.t to x using Faa di Bruno
-f_of_g2_n = proquo.composition_rule_nth(f_at_g[1:], g[1:])
+f_of_g2_n = derrle.composition_rule_nth(f_at_g[1:], g[1:])
 # all devivatives of f(g(x)) w.r.t to x using Faa di Bruno
-f_of_g2 = proquo.composition_rule(f_at_g, g)
+f_of_g2 = derrle.composition_rule(f_at_g, g)
 print('n-th composite derivative check (Faa di Bruno)     : ', sp.simplify(f_of_g1[-1]-f_of_g2_n))
 check_f_of_g = list(map(lambda s1,s2 : sp.simplify(s1-s2), f_of_g1, f_of_g2))
 print('Composition rule check (Faa di Bruno)              : ', check_f_of_g)
 
 # all devivatives of f(g(x)) w.r.t to x using truncated power series
-f_of_g3 = trunc.composition_rule(f_at_g, g)
+f_of_g3 = dercomp.composition_rule(f_at_g, g)
 check_f_of_g3 = list(map(lambda s1,s2 : sp.simplify(s1-s2), f_of_g1, f_of_g3))
 print('Composition rule check: (truncated power series)   : ', check_f_of_g)
 
 
 # all devivatives of f(g(x)) w.r.t to x using rescaled truncated power series
 f_of_gr = retrieve_derivatives(
-    proquo_r.composition_rule_r(rescale_derivatives(f_at_g), rescale_derivatives(g)))
+    psrle.composition_rule_r(rescale_derivatives(f_at_g), rescale_derivatives(g)))
 check_f_of_gr = list(map(lambda s1,s2 : sp.simplify(s1-s2), f_of_g1, f_of_gr))
 print('Composition rule check: (rescaled power series)   : ', check_f_of_gr)
 
