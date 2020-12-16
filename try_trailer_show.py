@@ -38,13 +38,11 @@ ax.grid(True)
 class car:
     def __init__(self, ax, width, length):
         self.ax = ax
-        self.wid = width
-        self.len = length
-        self.wheel_wid = width / 10;
-        self.wheel_len = length / 3;
+        wheel_wid = width / 7;
+        wheel_len = length / 3;
         axle_wid = width / 20
         # vector from wheel center to wheel lower-left corner
-        self.wheel_off = np.array([-self.wheel_wid/2, -self.wheel_len/2])
+        self.wheel_off = np.array([-wheel_wid/2, -wheel_len/2])
         
         # rear wheels are fixed relative to chassis (lower-left corner pos)
         self.chassis_pos = np.array([-width/2, 0])
@@ -58,17 +56,19 @@ class car:
         # axles
         self.raxle_pos = np.array([-width/2, -axle_wid/2])
         self.faxle_pos = np.array([-width/2, length - axle_wid/2])
+        self.link_pos = np.array([-axle_wid/2, 0])
         
         self.chassis = plt.Rectangle(self.chassis_pos, width, length, angle=0, color='blue')
         
-        self.rwheell = plt.Rectangle(self.rwheell_pos, self.wheel_wid, self.wheel_len, angle=0, color='black')
-        self.rwheelr = plt.Rectangle(self.rwheelr_pos, self.wheel_wid, self.wheel_len, angle=0, color='black')
+        self.rwheell = plt.Rectangle(self.rwheell_pos, wheel_wid, wheel_len, angle=0, color='black')
+        self.rwheelr = plt.Rectangle(self.rwheelr_pos, wheel_wid, wheel_len, angle=0, color='black')
         
-        self.fwheell = plt.Rectangle(self.fwheell_cpos + self.wheel_off, self.wheel_wid, self.wheel_len, angle=0, color='black')
-        self.fwheelr = plt.Rectangle(self.fwheelr_cpos + self.wheel_off, self.wheel_wid, self.wheel_len, angle=0, color='black')
+        self.fwheell = plt.Rectangle(self.fwheell_cpos + self.wheel_off, wheel_wid, wheel_len, angle=0, color='black')
+        self.fwheelr = plt.Rectangle(self.fwheelr_cpos + self.wheel_off, wheel_wid, wheel_len, angle=0, color='black')
         
         self.raxle = plt.Rectangle(self.raxle_pos, width, axle_wid, angle=0, color='black')
         self.faxle = plt.Rectangle(self.faxle_pos, width, axle_wid, angle=0, color='black')
+        self.link = plt.Rectangle(self.link_pos, axle_wid, length, angle=0, color='black')
         
         ax.add_patch(self.chassis)
         ax.add_patch(self.rwheell)
@@ -77,9 +77,12 @@ class car:
         ax.add_patch(self.fwheelr)
         ax.add_patch(self.raxle)
         ax.add_patch(self.faxle)
+        ax.add_patch(self.link)
         
     
-    def move(self, pos, alpha1, alpha2):
+    def move(self, pos, angle1, angle2):
+        alpha1 = angle1 - np.pi / 2
+        alpha2 = angle2 - np.pi / 2
         ca = np.cos(alpha1)
         sa = np.sin(alpha1)
         R1 = np.array([[ca, -sa],[sa, ca]])
@@ -91,53 +94,98 @@ class car:
         self.rwheelr.xy = pos + np.matmul(R1, self.rwheelr_pos)
         self.raxle.xy = pos + np.matmul(R1, self.raxle_pos)
         self.faxle.xy = pos + np.matmul(R1, self.faxle_pos)
+        self.link.xy = pos + np.matmul(R1, self.link_pos)
         self.chassis.angle = 180 * alpha1 / np.pi;
         self.rwheell.angle = 180 * alpha1 / np.pi;
         self.rwheelr.angle = 180 * alpha1 / np.pi;
         self.raxle.angle = 180 * alpha1 / np.pi;
         self.faxle.angle = 180 * alpha1 / np.pi;
+        self.link.angle = 180 * alpha1 / np.pi;
         
         self.fwheell.xy = pos + np.matmul(R1, self.fwheell_cpos) + np.matmul(R2, self.wheel_off)
         self.fwheelr.xy = pos + np.matmul(R1, self.fwheelr_cpos) + np.matmul(R2, self.wheel_off)
         self.fwheell.angle = 180 * alpha2 / np.pi;
         self.fwheelr.angle = 180 * alpha2 / np.pi;
         
+    def alpha(self, alpha):
+        self.chassis.set_alpha(alpha)
+        self.rwheell.set_alpha(alpha)
+        self.rwheelr.set_alpha(alpha)
+        self.fwheell.set_alpha(alpha)
+        self.fwheelr.set_alpha(alpha)
+        self.raxle.set_alpha(alpha)
+        self.faxle.set_alpha(alpha)
+        self.link.set_alpha(alpha)
+        
+        
 
 class trailer:
     def __init__(self, ax, width, length):
         self.ax = ax
+        wheel_wid = width / 7;
+        wheel_len = length / 3;
+        axle_wid = width / 20
+        # vector from wheel center to wheel lower-left corner
+        self.wheel_off = np.array([-wheel_wid/2, -wheel_len/2])
+        
+        # rear wheels are fixed relative to chassis (lower-left corner pos)
         self.chassis_pos = np.array([-width/2, 0])
-        self.rwheell_pos = np.array([-width/1.8, -length/16])
-        self.rwheelr_pos = np.array([width/1.8-width/10, -length/16])
+        self.rwheell_pos = np.array([-width/2, 0]) + self.wheel_off
+        self.rwheelr_pos = np.array([width/2, 0]) + self.wheel_off
         
-        self.fwheell_pos = np.array([-width/1.8, -length/8])
-        self.fwheelr_pos = np.array([width/1.8-width/10, -length/8])
+        # axle
+        self.raxle_pos = np.array([-width/2, -axle_wid/2])
+        self.link_pos = np.array([-axle_wid/2, 0])
         
-        self.chassis = plt.Rectangle(self.chassis_pos, width, length, angle=0, color='blue')
-        self.rwheell = plt.Rectangle(self.rwheell_pos, width/10, length/3, angle=0, color='black')
-        self.rwheelr = plt.Rectangle(self.rwheelr_pos, width/10, length/3, angle=0, color='black')
+        self.chassis = plt.Rectangle(self.chassis_pos, width, length/2, angle=0, color='blue')
+        
+        self.rwheell = plt.Rectangle(self.rwheell_pos, wheel_wid, wheel_len, angle=0, color='black')
+        self.rwheelr = plt.Rectangle(self.rwheelr_pos, wheel_wid, wheel_len, angle=0, color='black')
+
+        self.raxle = plt.Rectangle(self.raxle_pos, width, axle_wid, angle=0, color='black')
+        self.link = plt.Rectangle(self.link_pos, axle_wid, length, angle=0, color='black')
+        
         ax.add_patch(self.chassis)
         ax.add_patch(self.rwheell)
         ax.add_patch(self.rwheelr)
-    
-    def move(self, pos, alpha):
-        ca = np.cos(alpha)
-        sa = np.sin(alpha)
-        R = np.array([[ca, -sa],[sa, ca]])
-        self.chassis.xy = pos + np.matmul(R, self.chassis_pos)
-        self.rwheell.xy = pos + np.matmul(R, self.rwheell_pos)
-        self.rwheelr.xy = pos + np.matmul(R, self.rwheelr_pos)
-        self.chassis.angle = 180 * alpha / np.pi;
-        self.rwheell.angle = 180 * alpha / np.pi;
-        self.rwheelr.angle = 180 * alpha / np.pi;
-        
-        
-        
-t=car(ax, 0.5,0.8)       
+        ax.add_patch(self.raxle)
+        ax.add_patch(self.link)
 
-t.move([1,0.5], 0.3, 0.6)       
         
+    
+    def move(self, pos, angle1):
+        alpha1 = angle1 - np.pi / 2
+        ca = np.cos(alpha1)
+        sa = np.sin(alpha1)
+        R1 = np.array([[ca, -sa],[sa, ca]])
+        self.chassis.xy = pos + np.matmul(R1, self.chassis_pos)
+        self.rwheell.xy = pos + np.matmul(R1, self.rwheell_pos)
+        self.rwheelr.xy = pos + np.matmul(R1, self.rwheelr_pos)
+        self.raxle.xy = pos + np.matmul(R1, self.raxle_pos)
+        self.link.xy = pos + np.matmul(R1, self.link_pos)
+        self.chassis.angle = 180 * alpha1 / np.pi;
+        self.rwheell.angle = 180 * alpha1 / np.pi;
+        self.rwheelr.angle = 180 * alpha1 / np.pi;
+        self.raxle.angle = 180 * alpha1 / np.pi;
+        self.link.angle = 180 * alpha1 / np.pi;
         
+    def alpha(self, alpha):
+        self.chassis.set_alpha(alpha)
+        self.rwheell.set_alpha(alpha)
+        self.rwheelr.set_alpha(alpha)
+        self.raxle.set_alpha(alpha)
+        self.link.set_alpha(alpha)
+     
+        
+c=car(ax, 0.5,0.8)    
+
+t = trailer(ax, 0.5, 0.8)   
+
+c.move([1,0.5], 0.3, 0.6)       
+t.move([-.4, 0.8], 0.4)      
+
+c.alpha(0.5)
+t.alpha(0.5)
         
         
         
