@@ -27,7 +27,7 @@ collection = PatchCollection(patches, cmap=plt.cm.hsv, alpha=0.3)
 
 fig, ax = plt.subplots()
 ax.axis('equal')
-ax.set_xlim(-3,3)
+ax.set_xlim(-3,6)
 ax.set_ylim(-3,3)
 ax.grid(True)
 
@@ -58,7 +58,7 @@ class car:
         self.faxle_pos = np.array([-width/2, length - axle_wid/2])
         self.link_pos = np.array([-axle_wid/2, 0])
         
-        self.chassis = plt.Rectangle(self.chassis_pos, width, length, angle=0, color='blue')
+        self.chassis = plt.Rectangle(self.chassis_pos, width, length, angle=0, color='xkcd:ocean blue')
         
         self.rwheell = plt.Rectangle(self.rwheell_pos, wheel_wid, wheel_len, angle=0, color='black')
         self.rwheelr = plt.Rectangle(self.rwheelr_pos, wheel_wid, wheel_len, angle=0, color='black')
@@ -137,7 +137,7 @@ class trailer:
         self.raxle_pos = np.array([-width/2, -axle_wid/2])
         self.link_pos = np.array([-axle_wid/2, 0])
         
-        self.chassis = plt.Rectangle(self.chassis_pos, width, length/2, angle=0, color='blue')
+        self.chassis = plt.Rectangle(self.chassis_pos, width, length/2, angle=0, color='xkcd:ocean blue')
         
         self.rwheell = plt.Rectangle(self.rwheell_pos, wheel_wid, wheel_len, angle=0, color='black')
         self.rwheelr = plt.Rectangle(self.rwheelr_pos, wheel_wid, wheel_len, angle=0, color='black')
@@ -177,15 +177,64 @@ class trailer:
         self.link.set_alpha(alpha)
      
         
-c=car(ax, 0.5,0.8)    
-
-t = trailer(ax, 0.5, 0.8)   
-
-c.move([1,0.5], 0.3, 0.6)       
-t.move([-.4, 0.8], 0.4)      
-
-c.alpha(0.5)
-t.alpha(0.5)
+     
         
+class train:
+    def __init__(self, ax, width, lengths):
+        assert len(lengths) >= 3
+        self.vehicles = [];
+        pos = 0
+        # trailers
+        for k in range(len(lengths) - 2):
+            self.vehicles.append(trailer(ax, width, lengths[k]))
+            self.vehicles[k].move([pos, 0], 0)
+            pos += lengths[k]
+        # head car (last lengths value actually not used)
+        self.vehicles.append(car(ax,width,lengths[-2]))
+        self.vehicles[-1].move([pos, 0], 0, 0)   
         
+    def place(self, x, y):
+        assert len(x) == len(y)
+        assert len(x) == len(self.vehicles) + 2
+        angles = list(map(np.arctan2, np.diff(y), np.diff(x)))
+        print("angles = ", angles)
+        for k in range(len(self.vehicles) - 1):           
+            self.vehicles[k].move([x[k], y[k]], angles[k])
+        self.vehicles[-1].move([x[-3], y[-3]], angles[-2], angles[-1])
+    
+    def alpha(self, alpha):
+        for v in self.vehicles:
+            v.alpha(alpha)
+            
+            
+            
+# c=car(ax, 0.5,0.8)    
+
+# t = trailer(ax, 0.5, 0.8)   
+
+# c.move([1,0.5], 0.3, 0.6)       
+# t.move([-.4, 0.8], 0.4)      
+
+# c.alpha(1)
+# t.alpha(0.5)
+
+            
+# degree to load from result file
+n = 5
+
+# load data
+fileName = "data/SXSY_n%d.npy" % n
+with open(fileName, 'rb') as f:
+    SX = np.load(f)
+    SY = np.load(f)
+    f.close()
+    
+Lengths = np.sqrt(np.diff(SX[:,0])**2 + np.diff(SY[:,0])**2)
+Width = min(Lengths) / 2
         
+
+
+tr = train(ax, 0.5, Lengths)
+tr.alpha(0.5)   
+tr.place(SX[:,200],SY[:,200])      
+plt.plot(SX[:,200],SY[:,200])        
