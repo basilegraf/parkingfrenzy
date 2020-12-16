@@ -10,6 +10,7 @@ import numpy as np
 import numpy.matlib
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+import matplotlib as mpl
 
 # Use qt for animations
 try:
@@ -31,16 +32,21 @@ with open(fileName, 'rb') as f:
     
 # class for displaying a single trailer
 class trailer_show:
-    def __init__(ax, length, width):
+    def __init__(self, ax, length, width):
         self.ax = ax
         self.width = width
         self.length = length
-        self.xy = [-width/2 ,0]
-        self.chassis = plt.Rectangle(self.xy, width, height, -pi/2)
+        self.xy = [0 ,0]
+        angle = 0
+        chassis = plt.Rectangle([-width/2,0], width, length, angle)
+        weell = plt.Rectangle([-width/2,0], width/10, length/4, angle)
+        weelr = plt.Rectangle([width/2-width/10,0], width/10, length/4, angle)
+        ax.add_patch(chassis)
+        ax.add_patch(weell)
+        ax.add_patch(weelr)
         
     def show(xyIn,a):
         self.xy = np.asarray(xyIn)       
-        theta = np.radians(30)
         c, s = np.cos(a), np.sin(a)
         R = np.array([[c, -s], [s, c]])
         
