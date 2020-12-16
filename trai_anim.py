@@ -197,7 +197,6 @@ class train:
         assert len(x) == len(y)
         assert len(x) == len(self.vehicles) + 2
         angles = list(map(np.arctan2, np.diff(y), np.diff(x)))
-        print("angles = ", angles)
         for k in range(len(self.vehicles) - 1):           
             self.vehicles[k].move([x[k], y[k]], angles[k])
         self.vehicles[-1].move([x[-3], y[-3]], angles[-2], angles[-1])
@@ -220,7 +219,7 @@ class train:
 
             
 # degree to load from result file
-n = 5
+n = 10
 
 # load data
 fileName = "data/SXSY_n%d.npy" % n
@@ -234,7 +233,50 @@ Width = min(Lengths) / 2
         
 
 
-tr = train(ax, 0.5, Lengths)
-tr.alpha(0.5)   
-tr.place(SX[:,200],SY[:,200])      
-plt.plot(SX[:,200],SY[:,200])        
+# tr = train(ax, Width, Lengths)
+# tr.alpha(0.5)   
+# tr.place(SX[:,200],SY[:,200])      
+# plt.plot(SX[:,200],SY[:,200])       
+
+
+
+class animTrain:
+    def __init__(self, SX, SY):
+        self.fig, self.ax = plt.subplots()
+        self.SX = SX
+        self.SY = SY
+        self.frames = range(SX.shape[1])
+        
+        
+    def initAnim(self):
+        self.ax.clear()
+        self.ax.plot(self.SX.transpose(), self.SY.transpose())
+        
+        Lengths = np.sqrt(np.diff(SX[:,0])**2 + np.diff(SY[:,0])**2)
+        Width = min(Lengths) / 2
+        self.Train = train(self.ax, Width, Lengths)
+        self.Train.alpha(1.0) 
+        
+        self.Train.place(self.SX[:,0], self.SY[:,0])    
+        self.ln, = self.ax.plot(self.SX[:,-1], self.SY[:,-1], 'o-',linewidth=3, color='black')
+        self.ax.set_aspect(aspect='equal', adjustable='box')
+        self.ax.set_xlim(left=np.min(self.SX), right=np.max(self.SX))
+        self.ax.set_ylim(bottom=np.min(self.SY), top=np.max(self.SY))
+        #self.ax.set_xbound(lower=-5, upper=5)
+        #self.ax.set_ybound(lower=-0.5, upper=8)
+        self.ax.grid(b=True)
+        
+    def updateTrain(self, frame):
+        self.ln.set_xdata(self.SX[:, -frame])
+        self.ln.set_ydata(self.SY[:, -frame])
+        self.Train.place(self.SX[:, -frame], self.SY[:, -frame])  
+        #self.ln, = self.ax.plot(self.TX[:,frame], self.TY[:,frame])
+       
+    def anim(self):
+        return FuncAnimation(self.fig, self.updateTrain, self.frames, init_func=self.initAnim, blit=False, repeat_delay=1000, interval=50)
+ 
+     
+anim = animTrain(SX, SY)
+aa = anim.anim()
+
+ 

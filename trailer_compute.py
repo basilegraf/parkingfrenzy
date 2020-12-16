@@ -24,7 +24,7 @@ except:
     pass
 
 
-n = 5 # number of links (trailers)
+n = 10 # number of links (trailers)
 m = 2 # additional smoothness
 p = n+m # spline order 
 sMax = 1 # path parameter goes from 0 to sMax
