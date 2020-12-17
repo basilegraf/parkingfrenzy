@@ -219,7 +219,7 @@ class train:
 
             
 # degree to load from result file
-n = 5
+n = 15
 
 # load data
 fileName = "data/SXSY_n%d.npy" % n
@@ -279,6 +279,12 @@ class background:
             p.set_alpha(alpha)
         for l in self.lines:
             l.set_alpha(alpha)
+    
+    def zorder(self, zo):
+        for p in self.patches:
+            p.set_zorder(zo)
+        for l in self.lines:
+            l.set_zorder(zo)
 
 
 
@@ -293,13 +299,14 @@ class animTrain:
     def initAnim(self):
         self.ax.clear()
         self.ax.axis('off')
-        self.ax.plot(self.SX.transpose(), self.SY.transpose())
+        self.ax.plot(self.SX[-1::-1,:].transpose(), self.SY[-1::-1,:].transpose(), zorder=-1000, alpha = 0.7)
         
         Lengths = np.sqrt(np.diff(SX[:,0])**2 + np.diff(SY[:,0])**2)
         Width = min(Lengths) / 2
         
         self.Back = background(self.SX, self.SY, self.ax)
         self.Back.alpha(1.0)
+        self.Back.zorder(-500)
         
         self.Train = train(self.ax, Width, Lengths)
         self.Train.alpha(1.0) 
