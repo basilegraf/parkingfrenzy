@@ -25,11 +25,11 @@ patches = [chassis, wheell, wheelr]
 
 collection = PatchCollection(patches, cmap=plt.cm.hsv, alpha=0.3)
 
-fig, ax = plt.subplots()
-ax.axis('equal')
-ax.set_xlim(-3,6)
-ax.set_ylim(-3,3)
-ax.grid(True)
+# fig, ax = plt.subplots()
+# ax.axis('equal')
+# ax.set_xlim(-3,6)
+# ax.set_ylim(-3,3)
+# ax.grid(True)
 
 
 #ax.add_collection(collection)
@@ -219,7 +219,7 @@ class train:
 
             
 # degree to load from result file
-n = 10
+n = 5
 
 # load data
 fileName = "data/SXSY_n%d.npy" % n
@@ -239,6 +239,48 @@ Width = min(Lengths) / 2
 # plt.plot(SX[:,200],SY[:,200])       
 
 
+class background:
+    def __init__(self, SX, SY, ax):
+        n = len(SX[:,0])
+        xrange = np.array([np.min(SX), np.max(SX)])
+        yrange = np.array([np.min(SY), np.max(SY)])
+        ydisp = abs(np.max(SY[0,:])-np.min(SY[0,:]))
+        lanewidth = 1.2*ydisp
+        parkingwidth = 0.8*ydisp
+        trainlength = abs(np.max(SX[:,0])-np.min(SX[:,0]))
+        trailerLength = trainlength / n
+        
+        self.patches = []
+        self.patches.append(plt.Rectangle([np.min(SX),np.min(SY)], np.max(SX)-np.min(SX), np.max(SY)-np.min(SY), color = 'xkcd:grass green'))
+        self.patches.append(plt.Rectangle([np.min(SX),0.5*parkingwidth], np.max(SX)-np.min(SX), 2*lanewidth, color = 'gray'))
+        parkxy = [-trailerLength/2,-0.5*parkingwidth]
+        parklx = trainlength
+        parkly= parkingwidth
+        self.patches.append(plt.Rectangle(parkxy, parklx, parkly, color = 'gray'))
+        
+        
+        lw = 4
+        self.lines = []
+        self.lines.append(mpl.lines.Line2D(xrange, 0*yrange+0.5*parkingwidth + lanewidth, color='white',linestyle='dashed', linewidth = lw))
+        self.lines.append(mpl.lines.Line2D(xrange, 0*yrange+0.5*parkingwidth, color='white', linewidth = lw))
+        self.lines.append(mpl.lines.Line2D(xrange, 0*yrange+0.5*parkingwidth + 2*lanewidth, color='white', linewidth = lw))
+        # park lines
+        self.lines.append(mpl.lines.Line2D([parkxy[0],parkxy[0]+parklx], [-0.5*parkingwidth,-0.5*parkingwidth], color='white', linewidth = lw))
+        self.lines.append(mpl.lines.Line2D([parkxy[0],parkxy[0]], [-0.5*parkingwidth,0.5*parkingwidth], color='white', linewidth = lw))
+        self.lines.append(mpl.lines.Line2D([parkxy[0]+parklx,parkxy[0]+parklx], [-0.5*parkingwidth,0.5*parkingwidth], color='white', linewidth = lw))
+    
+        for p in self.patches:
+            ax.add_patch(p)
+        for l in self.lines:
+            ax.add_artist(l)
+            
+    def alpha(self, alpha):
+        for p in self.patches:
+            p.set_alpha(alpha)
+        for l in self.lines:
+            l.set_alpha(alpha)
+
+
 
 class animTrain:
     def __init__(self, SX, SY):
@@ -250,30 +292,45 @@ class animTrain:
         
     def initAnim(self):
         self.ax.clear()
+        self.ax.axis('off')
         self.ax.plot(self.SX.transpose(), self.SY.transpose())
         
         Lengths = np.sqrt(np.diff(SX[:,0])**2 + np.diff(SY[:,0])**2)
         Width = min(Lengths) / 2
+        
+        self.Back = background(self.SX, self.SY, self.ax)
+        self.Back.alpha(1.0)
+        
         self.Train = train(self.ax, Width, Lengths)
         self.Train.alpha(1.0) 
         
-        self.Train.place(self.SX[:,0], self.SY[:,0])    
+        self.Train.place(self.SX[:,0], self.SY[:,0]) 
+        
+        
+           
         self.ln, = self.ax.plot(self.SX[:,-1], self.SY[:,-1], 'o-',linewidth=3, color='black')
         self.ax.set_aspect(aspect='equal', adjustable='box')
         self.ax.set_xlim(left=np.min(self.SX), right=np.max(self.SX))
         self.ax.set_ylim(bottom=np.min(self.SY), top=np.max(self.SY))
         #self.ax.set_xbound(lower=-5, upper=5)
         #self.ax.set_ybound(lower=-0.5, upper=8)
-        self.ax.grid(b=True)
+        self.ax.grid(b=False)
         
     def updateTrain(self, frame):
         self.ln.set_xdata(self.SX[:, -frame])
         self.ln.set_ydata(self.SY[:, -frame])
         self.Train.place(self.SX[:, -frame], self.SY[:, -frame])  
         #self.ln, = self.ax.plot(self.TX[:,frame], self.TY[:,frame])
+        alphaBegin = min(1.0, max(0.0, 2.0 - frame/100))
+        n = len(self.SX[0, :])
+        alphaEnd = min(1.0, max(0.0, 2.0 - (n-frame)/100))
+        alpha = max(alphaBegin, alphaEnd)
+        
+        self.Back.alpha(alpha)
+        self.Train.alpha(alpha)
        
     def anim(self):
-        return FuncAnimation(self.fig, self.updateTrain, self.frames, init_func=self.initAnim, blit=False, repeat_delay=1000, interval=50)
+        return FuncAnimation(self.fig, self.updateTrain, self.frames, init_func=self.initAnim, blit=False, repeat_delay=1000, interval=20)
  
      
 anim = animTrain(SX, SY)

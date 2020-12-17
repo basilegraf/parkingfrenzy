@@ -24,7 +24,7 @@ except:
     pass
 
 
-n = 10 # number of links (trailers)
+n = 15 # number of links (trailers)
 m = 2 # additional smoothness
 p = n+m # spline order 
 sMax = 1 # path parameter goes from 0 to sMax
@@ -74,23 +74,25 @@ fInt = lambda tv, sv : pathDerivative(sv)
 fEvent = lambda tv, sv : sv[0] - sMax
 fEvent.terminal = True
 
+print("Start computing path length")
 tComp = time.time()
-ivpSol = integrate.solve_ivp(fInt, tSpan, s0, events = fEvent)
+ivpSol = integrate.solve_ivp(fInt, tSpan, s0, events = fEvent, rtol=1.0e-6, atol=1.0e-6)
 tComp = time.time() - tComp
 sPathMax = ivpSol.t[-1]
 print("Path length = %f, computation time = %f" % (sPathMax, tComp))
 
 # Recompute path by requiring evenly sampled (in time) path postions
 tSpan = [0, 2.0 * sPathMax]
-dl = 0.1 * np.sqrt(lx**2 + ly**2)
+dl = 0.05 * np.sqrt(lx**2 + ly**2)
 tEval = np.linspace(0, tSpan[1], int(round(tSpan[1] / dl)))
 x0 = [0]
 fInt = lambda tt, xx : pathDerivative(xx)
 fEvent = lambda tt, xx : xx[0]-lx
 fEvent.terminal = True
 
+print("Start computing path")
 tComp = time.time()
-ivpSol = integrate.solve_ivp(fInt, tSpan, x0, events = fEvent, rtol=1.0e-5, atol=1.0e-5, t_eval=tEval)#, max_step = 0.01)
+ivpSol = integrate.solve_ivp(fInt, tSpan, x0, events = fEvent, rtol=1.0e-6, atol=1.0e-6, t_eval=tEval)#, max_step = 0.01)
 tComp = time.time() - tComp
 print("Path computation. Computation time = %f" % tComp)
 
@@ -153,7 +155,7 @@ def trailerPositions(s):
 SX, SY = trailerPositions(sValues)
 
 
-if True:       
+if False:       
     anim = animTrailers(SX, SY)
     aa = anim.anim()
 
