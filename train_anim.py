@@ -11,6 +11,7 @@ import numpy as np
 import numpy.matlib
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+import matplotlib.animation as animation
 import matplotlib as mpl
 from matplotlib.collections import PatchCollection
 
@@ -219,7 +220,7 @@ class train:
 
             
 # degree to load from result file
-n = 15
+n = 5
 
 # load data
 fileName = "data/SXSY_n%d.npy" % n
@@ -242,7 +243,9 @@ Width = min(Lengths) / 2
 class background:
     def __init__(self, SX, SY, ax):
         n = len(SX[:,0])
-        xrange = np.array([np.min(SX), np.max(SX)])
+        marg = (np.max(SX) - np.min(SX))/200  
+        
+        xrange = np.array([np.min(SX)-marg, np.max(SX)+marg])
         yrange = np.array([np.min(SY), np.max(SY)])
         ydisp = abs(np.max(SY[0,:])-np.min(SY[0,:]))
         lanewidth = 1.2*ydisp
@@ -251,8 +254,8 @@ class background:
         trailerLength = trainlength / n
         
         self.patches = []
-        self.patches.append(plt.Rectangle([np.min(SX),np.min(SY)], np.max(SX)-np.min(SX), np.max(SY)-np.min(SY), color = 'xkcd:grass green'))
-        self.patches.append(plt.Rectangle([np.min(SX),0.5*parkingwidth], np.max(SX)-np.min(SX), 2*lanewidth, color = 'gray'))
+        self.patches.append(plt.Rectangle([np.min(SX)-marg, np.min(SY)-marg], np.max(SX)-np.min(SX)+2*marg, np.max(SY)-np.min(SY)+2*marg, color = 'xkcd:grass green'))
+        self.patches.append(plt.Rectangle([np.min(SX)-marg,0.5*parkingwidth], np.max(SX)-np.min(SX)+2*marg, 2*lanewidth, color = 'gray'))
         parkxy = [-trailerLength/2,-0.5*parkingwidth]
         parklx = trainlength
         parkly= parkingwidth
@@ -294,6 +297,9 @@ class animTrain:
         self.SX = SX
         self.SY = SY
         self.frames = range(SX.shape[1])
+        self.fig.set_size_inches(19.20, 10.80, True)
+        self.fig.set_dpi(100)
+        self.fig.tight_layout()
         
         
     def initAnim(self):
@@ -314,11 +320,11 @@ class animTrain:
         self.Train.place(self.SX[:,0], self.SY[:,0]) 
         
         
-           
-        self.ln, = self.ax.plot(self.SX[:,-1], self.SY[:,-1], 'o-',linewidth=3, color='black')
+        marg = (np.max(self.SX) - np.min(self.SX))/200   
+        self.ln, = self.ax.plot(self.SX[:,-1], self.SY[:,-1], 'o-',linewidth=3, color='xkcd:scarlet', zorder=-5)
         self.ax.set_aspect(aspect='equal', adjustable='box')
-        self.ax.set_xlim(left=np.min(self.SX), right=np.max(self.SX))
-        self.ax.set_ylim(bottom=np.min(self.SY), top=np.max(self.SY))
+        self.ax.set_xlim(left=np.min(self.SX)-marg, right=np.max(self.SX)+marg)
+        self.ax.set_ylim(bottom=np.min(self.SY)-marg, top=np.max(self.SY)+marg)
         #self.ax.set_xbound(lower=-5, upper=5)
         #self.ax.set_ybound(lower=-0.5, upper=8)
         self.ax.grid(b=False)
@@ -343,4 +349,7 @@ class animTrain:
 anim = animTrain(SX, SY)
 aa = anim.anim()
 
- 
+if False:
+    fileName = "data/Parking_%d.mp4" % n
+    writer = animation.FFMpegWriter(fps=25, metadata=dict(artist='Ugarte'), bitrate=3000)
+    aa.save(fileName, writer=writer,dpi=100, savefig_kwargs=dict(facecolor=(0,0,0)))
