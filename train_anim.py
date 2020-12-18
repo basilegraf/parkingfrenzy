@@ -346,11 +346,12 @@ class animTrain:
         return FuncAnimation(self.fig, self.updateTrain, self.frames, init_func=self.initAnim, blit=False, repeat_delay=1000, interval=20)
  
      
-anim = animTrain(SX[:,::-1], SY[:,::-1])
-aa = anim.anim()
-aa.repeat = False
-if True:
-    brate = 1500
-    fileName = "data/Parking_%d_%d.mp4" % (n, brate)
-    writer = animation.FFMpegWriter(fps=25, metadata=dict(artist='Ugarte'), bitrate=brate)
-    aa.save(fileName, writer=writer,dpi=100, savefig_kwargs=dict(facecolor=(0,0,0)))
+if __name__ == "__main__":
+    anim = animTrain(SX[:,::-1], SY[:,::-1])
+    aa = anim.anim()
+    aa.repeat = False
+    if True:
+        brate = 1500
+        fileName = "data/Parking_%d_%d.mp4" % (n, brate)
+        writer = animation.FFMpegWriter(fps=25, metadata=dict(artist='Ugarte'), bitrate=brate)
+        aa.save(fileName, writer=writer,dpi=100, savefig_kwargs=dict(facecolor=(0,0,0)))
