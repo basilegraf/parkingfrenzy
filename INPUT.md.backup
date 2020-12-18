@@ -1,7 +1,14 @@
 # parkingfrenzy
 
-A formula $$x$$:
+A formula $x+2=y^2$:
 $$\alpha=\sin(x)$$
+
+One more formula
+
+```
+$$\frac{n!}{k!(n-k)!} = {n \choose k}$$
+```
+
 But I see nothing...
 
 
@@ -13,4 +20,4 @@ But I see nothing...
 
 <img src="https://render.githubusercontent.com/render/math?math=e^{i \pi} = -1">
 
-bla bla <img src="https://render.githubusercontent.com/render/math?math=e^{i \pi} = x+1"> bla
+bla bla <img src="https://render.githubusercontent.com/render/math?math=e^{i \pi} = x%2B1"> bla

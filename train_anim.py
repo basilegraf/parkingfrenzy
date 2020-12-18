@@ -220,7 +220,7 @@ class train:
 
             
 # degree to load from result file
-n = 5
+n = 10
 
 # load data
 fileName = "data/SXSY_n%d.npy" % n
@@ -321,7 +321,7 @@ class animTrain:
         
         
         marg = (np.max(self.SX) - np.min(self.SX))/200   
-        self.ln, = self.ax.plot(self.SX[:,-1], self.SY[:,-1], 'o-',linewidth=3, color='xkcd:scarlet', zorder=-5)
+        self.ln, = self.ax.plot(self.SX[:,0], self.SY[:,0], 'o-',linewidth=3, color='xkcd:scarlet', zorder=-5)
         self.ax.set_aspect(aspect='equal', adjustable='box')
         self.ax.set_xlim(left=np.min(self.SX)-marg, right=np.max(self.SX)+marg)
         self.ax.set_ylim(bottom=np.min(self.SY)-marg, top=np.max(self.SY)+marg)
@@ -330,9 +330,9 @@ class animTrain:
         self.ax.grid(b=False)
         
     def updateTrain(self, frame):
-        self.ln.set_xdata(self.SX[:, -frame])
-        self.ln.set_ydata(self.SY[:, -frame])
-        self.Train.place(self.SX[:, -frame], self.SY[:, -frame])  
+        self.ln.set_xdata(self.SX[:, frame])
+        self.ln.set_ydata(self.SY[:, frame])
+        self.Train.place(self.SX[:, frame], self.SY[:, frame])  
         #self.ln, = self.ax.plot(self.TX[:,frame], self.TY[:,frame])
         alphaBegin = min(1.0, max(0.0, 2.0 - frame/100))
         n = len(self.SX[0, :])
@@ -346,10 +346,11 @@ class animTrain:
         return FuncAnimation(self.fig, self.updateTrain, self.frames, init_func=self.initAnim, blit=False, repeat_delay=1000, interval=20)
  
      
-anim = animTrain(SX, SY)
+anim = animTrain(SX[:,::-1], SY[:,::-1])
 aa = anim.anim()
-
-if False:
-    fileName = "data/Parking_%d.mp4" % n
-    writer = animation.FFMpegWriter(fps=25, metadata=dict(artist='Ugarte'), bitrate=3000)
+aa.repeat = False
+if True:
+    brate = 1500
+    fileName = "data/Parking_%d_%d.mp4" % (n, brate)
+    writer = animation.FFMpegWriter(fps=25, metadata=dict(artist='Ugarte'), bitrate=brate)
     aa.save(fileName, writer=writer,dpi=100, savefig_kwargs=dict(facecolor=(0,0,0)))

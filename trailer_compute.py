@@ -24,7 +24,7 @@ except:
     pass
 
 
-n = 15 # number of links (trailers)
+n = 2 # number of links (trailers)
 m = 2 # additional smoothness
 p = n+m # spline order 
 sMax = 1 # path parameter goes from 0 to sMax
@@ -155,7 +155,7 @@ def trailerPositions(s):
 SX, SY = trailerPositions(sValues)
 
 
-if False:       
+if True:       
     anim = animTrailers(SX, SY)
     aa = anim.anim()
 
