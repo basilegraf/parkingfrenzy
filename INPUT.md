@@ -9,10 +9,10 @@ For instance, consider a car with two trailers.
 ![](figures/train.png)
 
 One may choose any (sufficiently differentiable) path $(x_1(s),y_1(s))^T$ for the last trailer axle. From this path and its derivatives, all the other paths $(x_k(s),y_k(s))^T$ can be computed explicitly. The angle between the link $3-4$ and the link $4-5$ is the required steering angle of the head car. Note also that the four-wheeled head car is equivalent to two two-wheeled trailers.
-A formula $x+2=y^2$:
-$$\alpha=\sin(x)$$
 
-One more formula
+The equations are elementary, but naively applying them quickly leads to untractable expressions with growing numbers of trailers.
+
+### Recursive equations
 
 $$
 \begin{pmatrix}
