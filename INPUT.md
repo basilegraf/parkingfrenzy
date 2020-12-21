@@ -81,26 +81,34 @@ and this expression is rational in (no square roots). Hence, the multiple deriva
 ### More intermediate variables
 
 The second trick is to decompose the mapping $\varphi$ in sub-steps involving more intermediate variables (the derivatives of all $q_k$, not just $q_1$). Differentiating the original relation $q_{k+1}=f(q_k, q'_k)$ ($n-k-1$ times), gives a map
+
 $$
 \phi_k : \qquad \big( q_k(s), q'_k(s), \ldots, q_k^{(n-k)}(s) \big)
 \ \longmapsto \ 
 \big( q_{k+1}(s), q'_{k+1}(s), \ldots, q_{k+1}^{(n-k-1)}(s) \big).
 $$
+
 And
+
 $$
 \varphi = \phi_1 \circ \phi_2 \circ \cdots \circ \phi_{n-1} .
 $$
 
 ### High order product and quotient rules
 Computing the derivatives of the angles $\alpha_k$ is easy: first compute the derivatives of the products
+
 $$
 x'_k y''_k, \quad  x''_k y'_k, \quad x'^2_k \quad \textnormal{and} \quad y'^2_k
 $$
+
 with the product rule and then compute the derivatives of the quotient of 
+
 $$
 x'_k y''_k - x''_k y'_k \quad \textnormal{and} \quad x'^2_k + y'^2_k
 $$
+
 with the quotient rule. The product rule is given by
+
 $$
 \frac{d^r}{ds^r} \big( f(s) \cdot g(s) \big) = \sum_{j=0}^r 
 \begin{pmatrix} r \\ j \end{pmatrix}
@@ -110,10 +118,13 @@ $$
 To get the quotient rule for $f(s)/g(s)$, one first obtains a rule for the reciprocal $\bar g(s) = 1/g(s)$. This rule is obtained from the product rule and the equation $g(s)\cdot\bar g(s) = 1$. The product rule is then applied again on $f(s)\cdot\bar{g(s)}$.
 
 Next define
+
 $$
 f^{[k]}(s) := \frac 1 {k!} f^(k)(s)
 $$
+
 then
+
 $$
 \left(f\cdot g\right)^{[r]}  = \sum_{j=0}^r 
 f^{[r-j]}(s) \cdot g^{[j]}(s).
@@ -125,6 +136,7 @@ This has two benefits: 1) the product rule uses simple coefficients convolution,
 ### High order composition rule
 
 To complete the computations of $\phi_k$, we still need a high order composition rule to compute the derivatives of 
+
 $$
 \cos{\alpha_k} \quad \textnormal{and} \quad \sin{\alpha_k}
 $$
@@ -136,7 +148,9 @@ $$
 f(g(s_0)) 
 = \sum_k \frac 1 {k!} f^{(k)}\left( g(s_0) \right) \left( g(s) - g(s_0) \right)^k
 $$
+
 and then, let us replace $g(s)$ by its Taylor series around $s_0$
+
 $$
 f(g(s_0)) 
 = \sum_k \frac 1 {k!} f^{(k)}\left( g(s_0) \right) \left(
@@ -145,7 +159,9 @@ f(g(s_0))
 \right\}
  - g(s_0) \right)^k
 $$
+
 Clearly, defining the power series
+
 $$
 p_1(x) := \sum_k \frac 1 {k!} f^{(k)}(g(s_0)) \cdot x^k 
 $$
@@ -153,14 +169,18 @@ $$
 $$
 p_2(y) := -g(s_0) + y
 $$
+
 $$
 p_3(z) := \sum_l \frac{1}{l!} g^{(l)}(s_0) \cdot z^l
 $$
+
 we have that
+
 $$
 f(g(s)) = p_1 \circ p_2 \circ p_3 (s-s_0) = \sum_k \frac 1 {k!} 
 \underbrace{\left(\frac{d^k f(g(s))}{ds^k}\right)\Bigg|_{s=s_0}}_{\textnormal{values of interrest}} (s-s_0)^k
 $$
+
 Hence, computing the first $n$ coefficients of the power series
 $$ p_1 \circ p_2 \circ p_3 (w) $$
 we get the first $n$ derivatives of $f(g(s))$. Furthermore, re-expressing everything in terms of $f^{[i]}$ and $g^{[j]}$ we get rid of the factorial terms and end up manipulating polynomials. In turn, the (truncated) composition of polynomials can be implemented using the product rule for building the monomials one by one.

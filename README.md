@@ -39,23 +39,34 @@ and this expression is rational in (no square roots). Hence, the multiple deriva
 ### More intermediate variables
 
 The second trick is to decompose the mapping <img src="svgs/417a5301693b60807fa658e5ef9f9535.svg?invert_in_darkmode" align=middle width=10.75343279999999pt height=14.15524440000002pt/> in sub-steps involving more intermediate variables (the derivatives of all <img src="svgs/acc433299a99053a1abda8186a07965d.svg?invert_in_darkmode" align=middle width=14.604341399999988pt height=14.15524440000002pt/>, not just <img src="svgs/07d7104fe13d9faea3e641ad3d053832.svg?invert_in_darkmode" align=middle width=13.89085829999999pt height=14.15524440000002pt/>). Differentiating the original relation <img src="svgs/b29adaa9e6ca7a666c0ebdbe30725f94.svg?invert_in_darkmode" align=middle width=114.74904044999998pt height=24.7161288pt/> (<img src="svgs/d09536de7e7712cdfc5d7544dfca70e7.svg?invert_in_darkmode" align=middle width=67.34383095pt height=22.831056599999986pt/> times), gives a map
+
 <p align="center"><img src="svgs/83dd2c42c5963b7ca38c59d26c409dd3.svg?invert_in_darkmode" align=middle width=557.55191085pt height=23.497574099999998pt/></p>
+
 And
+
 <p align="center"><img src="svgs/7cb31372ed8c59110e804c05e9dea52b.svg?invert_in_darkmode" align=middle width=172.8972069pt height=15.251136449999997pt/></p>
 
 ### High order product and quotient rules
 Computing the derivatives of the angles <img src="svgs/3cc1484752cc8ef69d55b6991e28be35.svg?invert_in_darkmode" align=middle width=17.78167709999999pt height=14.15524440000002pt/> is easy: first compute the derivatives of the products
+
 <p align="center"><img src="svgs/5e5e17f4de0cc7bda295f2895eb90589.svg?invert_in_darkmode" align=middle width=214.87867665pt height=18.2666319pt/></p>
+
 with the product rule and then compute the derivatives of the quotient of 
+
 <p align="center"><img src="svgs/d23435a450c05899038b0f051088464a.svg?invert_in_darkmode" align=middle width=207.57252945pt height=18.2666319pt/></p>
+
 with the quotient rule. The product rule is given by
+
 <p align="center"><img src="svgs/abbdb186fdfbc5f2da82dc54c3104224.svg?invert_in_darkmode" align=middle width=321.6987939pt height=47.1348339pt/></p>
 
 To get the quotient rule for <img src="svgs/a79b98382d240e9a9ffbd6eb7ae7014f.svg?invert_in_darkmode" align=middle width=67.44880559999999pt height=24.65753399999998pt/>, one first obtains a rule for the reciprocal <img src="svgs/05d3043eab0f4e5440902a1b8fca69e9.svg?invert_in_darkmode" align=middle width=96.19858379999998pt height=24.65753399999998pt/>. This rule is obtained from the product rule and the equation <img src="svgs/fbd20db80429bd1a105e634ae0f5a9ed.svg?invert_in_darkmode" align=middle width=99.8513571pt height=24.65753399999998pt/>. The product rule is then applied again on <img src="svgs/507ad28ff324a6f5a8ebe56f72f6fc62.svg?invert_in_darkmode" align=middle width=71.10157724999998pt height=29.168957400000025pt/>.
 
 Next define
+
 <p align="center"><img src="svgs/2a83e64e012427c1ff2f185bfacbecee.svg?invert_in_darkmode" align=middle width=141.64519875pt height=32.990165999999995pt/></p>
+
 then
+
 <p align="center"><img src="svgs/599f4993569e7ab8c7549794f008194f.svg?invert_in_darkmode" align=middle width=227.16701534999996pt height=47.1348339pt/></p>
 
 This has two benefits: 1) the product rule uses simple coefficients convolution, 2) since high order derivatives tend to be numerically large, dividing them by <img src="svgs/9d6c5e19ffd270ead9ea60bbae1902d0.svg?invert_in_darkmode" align=middle width=13.64158619999999pt height=22.831056599999986pt/> leads to better "conditioned " computations. Note that the above is the same as computing the coefficients of the product of polynomials with coefficients <img src="svgs/affed31cd6a91b422fafefe0490e3287.svg?invert_in_darkmode" align=middle width=21.91128389999999pt height=29.190975000000005pt/> and <img src="svgs/269c9fdebb47178d570db923f16834ad.svg?invert_in_darkmode" align=middle width=21.97781519999999pt height=29.190975000000005pt/> and truncating the result at degree <img src="svgs/89f2e0d2d24bcf44db73aab8fc03252c.svg?invert_in_darkmode" align=middle width=7.87295519999999pt height=14.15524440000002pt/>. The corresponding quotient rule is obtained in the same way as above.
@@ -64,21 +75,30 @@ This has two benefits: 1) the product rule uses simple coefficients convolution,
 ### High order composition rule
 
 To complete the computations of <img src="svgs/a69e80fed79c7251863f7552dce583a5.svg?invert_in_darkmode" align=middle width=17.06057264999999pt height=22.831056599999986pt/>, we still need a high order composition rule to compute the derivatives of 
+
 <p align="center"><img src="svgs/7e4e71db35fb7372d5a40fa9b45c8789.svg?invert_in_darkmode" align=middle width=146.15694555pt height=13.881256950000001pt/></p>
 
 The first attempt was made using [Faa di Bruno's](https://en.wikipedia.org/wiki/Fa%C3%A0_di_Bruno%27s_formula) formula, in particular the form involving [Bell polynomials](https://en.wikipedia.org/wiki/Bell_polynomials#Recurrence_relations) since these can be easily implemented in code via a seemingly efficient recurrence relation. It turns out however that computing these polynomials this way quickly leads to very long computation times. I then stumbled on a [post](https://mathoverflow.net/questions/364036/combinatorics-of-multivariate-fa%C3%A0-di-bruno-formula) noting the "inefficiency" of Faa di Bruno formulae compared to power series approaches. Indeed, it is better to reconsider the problem from the point of view of formal power series. Our goal is to compute the first <img src="svgs/55a049b8f161ae7cfeb0197d75aff967.svg?invert_in_darkmode" align=middle width=9.86687624999999pt height=14.15524440000002pt/> derivatives of the composite function <img src="svgs/a6d29c2900ac7b61baf6b84023b0e44d.svg?invert_in_darkmode" align=middle width=51.52411769999999pt height=24.65753399999998pt/> (at a given value of <img src="svgs/6f9bad7347b91ceebebd3ad7e6f6f2d1.svg?invert_in_darkmode" align=middle width=7.7054801999999905pt height=14.15524440000002pt/>)
 
 To this end, let us look at the Taylor expansion of <img src="svgs/27280abcf92710218525f89d1f365008.svg?invert_in_darkmode" align=middle width=58.898576549999994pt height=24.65753399999998pt/> around <img src="svgs/8b839ae69dec8bfbdf995bcc1ad93dee.svg?invert_in_darkmode" align=middle width=36.29572979999999pt height=24.65753399999998pt/>.
 <p align="center"><img src="svgs/0c0b7da81b2e765923a8eb18a5a328b3.svg?invert_in_darkmode" align=middle width=312.98644575pt height=41.486034149999995pt/></p>
+
 and then, let us replace <img src="svgs/cdb4346e7e0053cb44dc04c5f12c862e.svg?invert_in_darkmode" align=middle width=28.921270949999986pt height=24.65753399999998pt/> by its Taylor series around <img src="svgs/ac3148a5746b81298cb0c456b661f197.svg?invert_in_darkmode" align=middle width=14.25802619999999pt height=14.15524440000002pt/>
+
 <p align="center"><img src="svgs/a666fb9bf43d8057c644b43e9b72f9b5.svg?invert_in_darkmode" align=middle width=485.40961589999995pt height=53.2425333pt/></p>
+
 Clearly, defining the power series
+
 <p align="center"><img src="svgs/ea81422d9ff3b282289098b67de2608f.svg?invert_in_darkmode" align=middle width=214.1736234pt height=41.486034149999995pt/></p>
 
 <p align="center"><img src="svgs/f054e0ca7df488092e04bc9f2d5e87d9.svg?invert_in_darkmode" align=middle width=141.385101pt height=16.438356pt/></p>
+
 <p align="center"><img src="svgs/b193913ca49fcab9405f4992def000e2.svg?invert_in_darkmode" align=middle width=179.58451664999998pt height=41.486034149999995pt/></p>
+
 we have that
+
 <p align="center"><img src="svgs/3e13f54a432b5d3f3bdb45b734e8eb88.svg?invert_in_darkmode" align=middle width=473.01588344999993pt height=74.34741765pt/></p>
+
 Hence, computing the first <img src="svgs/55a049b8f161ae7cfeb0197d75aff967.svg?invert_in_darkmode" align=middle width=9.86687624999999pt height=14.15524440000002pt/> coefficients of the power series
 <p align="center"><img src="svgs/e06a70f9966289fffe4485118aaeecd1.svg?invert_in_darkmode" align=middle width=102.98129325pt height=16.438356pt/></p>
 we get the first <img src="svgs/55a049b8f161ae7cfeb0197d75aff967.svg?invert_in_darkmode" align=middle width=9.86687624999999pt height=14.15524440000002pt/> derivatives of <img src="svgs/a6d29c2900ac7b61baf6b84023b0e44d.svg?invert_in_darkmode" align=middle width=51.52411769999999pt height=24.65753399999998pt/>. Furthermore, re-expressing everything in terms of <img src="svgs/affed31cd6a91b422fafefe0490e3287.svg?invert_in_darkmode" align=middle width=21.91128389999999pt height=29.190975000000005pt/> and <img src="svgs/269c9fdebb47178d570db923f16834ad.svg?invert_in_darkmode" align=middle width=21.97781519999999pt height=29.190975000000005pt/> we get rid of the factorial terms and end up manipulating polynomials. In turn, the (truncated) composition of polynomials can be implemented using the product rule for building the monomials one by one.
