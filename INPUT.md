@@ -106,6 +106,7 @@ $$
 \begin{pmatrix} r \\ j \end{pmatrix}
 f^{(r-j)}(s) \cdot g^{(j)}(s).
 $$
+
 To get the quotient rule for $f(s)/g(s)$, one first obtains a rule for the reciprocal $\bar g(s) = 1/g(s)$. This rule is obtained from the product rule and the equation $g(s)\cdot\bar g(s) = 1$. The product rule is then applied again on $f(s)\cdot\bar{g(s)}$.
 
 Next define
@@ -117,6 +118,7 @@ $$
 \left(f\cdot g\right)^{[r]}  = \sum_{j=0}^r 
 f^{[r-j]}(s) \cdot g^{[j]}(s).
 $$
+
 This has two benefits: 1) the product rule uses simple coefficients convolution, 2) since high order derivatives tend to be numerically large, dividing them by $k!$ leads to better "conditioned " computations. Note that the above is the same as computing the coefficients of the product of polynomials with coefficients $f^{[i]}$ and $g^{[j]}$ and truncating the result at degree $r$. The corresponding quotient rule is obtained in the same way as above.
 
 
@@ -126,6 +128,7 @@ To complete the computations of $\phi_k$, we still need a high order composition
 $$
 \cos{\alpha_k} \quad \textnormal{and} \quad \sin{\alpha_k}
 $$
+
 The first attempt was made using [Faa di Bruno's](https://en.wikipedia.org/wiki/Fa%C3%A0_di_Bruno%27s_formula) formula, in particular the form involving [Bell polynomials](https://en.wikipedia.org/wiki/Bell_polynomials#Recurrence_relations) since these can be easily implemented in code via a seemingly efficient recurrence relation. It turns out however that computing these polynomials this way quickly leads to very long computation times. I then stumbled on a [post](https://mathoverflow.net/questions/364036/combinatorics-of-multivariate-fa%C3%A0-di-bruno-formula) noting the "inefficiency" of Faa di Bruno formulae compared to power series approaches. Indeed, it is better to reconsider the problem from the point of view of formal power series. Our goal is to compute the first $n$ derivatives of the composite function $f(g(s))$ (at a given value of $s$)
 
 To this end, let us look at the Taylor expansion of $f(g(s_0))$ around $g(s_0)$.
@@ -164,7 +167,7 @@ we get the first $n$ derivatives of $f(g(s))$. Furthermore, re-expressing everyt
 
 ### Animation speed
 
-To produce an animation of a car with many trailers, one chooses a trajectory $q_1(s)$ for the last trailer's axle and then use the map $\varphi$ to compute all the other trailers and car positions. However doing so and using $s=t$ leads to a jerky animation since the head car's speed generally varies wildly (high derivatives) over time. As a remedy, we impose the head car's rear axle speed (which can be computed from the derivatives of $q_1(s(t))$ integration of the equation
+To produce an animation of a car with many trailers, one chooses a trajectory $q_1(s)$ for the last trailer's axle and then use the map $\varphi$ to compute all the other trailers and car positions. However doing so and using $s=t$ leads to a jerky animation since the head car's speed generally varies wildly (high derivatives) over time. As a remedy, we impose the head car's rear axle speed (which can be computed from the derivatives of $q_1(s(t))$ by integration of the equation
 
 $$
 \dot s(t) = \frac 1 {\sqrt{x'^2_{n-1}(s(t)) + y'^2_{n-1}(s(t))}}
