@@ -103,7 +103,9 @@ we have that
 <p align="center"><img src="svgs/3e13f54a432b5d3f3bdb45b734e8eb88.svg?invert_in_darkmode" align=middle width=473.01588344999993pt height=74.34741765pt/></p>
 
 Hence, computing the first <img src="svgs/55a049b8f161ae7cfeb0197d75aff967.svg?invert_in_darkmode" align=middle width=9.86687624999999pt height=14.15524440000002pt/> coefficients of the power series
-<p align="center"><img src="svgs/e06a70f9966289fffe4485118aaeecd1.svg?invert_in_darkmode" align=middle width=102.98129325pt height=16.438356pt/></p>
+
+<p align="center"><img src="svgs/cb37e00d46cebb22099fd2b1da0585ec.svg?invert_in_darkmode" align=middle width=102.98129325pt height=16.438356pt/></p>
+
 we get the first <img src="svgs/55a049b8f161ae7cfeb0197d75aff967.svg?invert_in_darkmode" align=middle width=9.86687624999999pt height=14.15524440000002pt/> derivatives of <img src="svgs/a6d29c2900ac7b61baf6b84023b0e44d.svg?invert_in_darkmode" align=middle width=51.52411769999999pt height=24.65753399999998pt/>. Furthermore, re-expressing everything in terms of <img src="svgs/affed31cd6a91b422fafefe0490e3287.svg?invert_in_darkmode" align=middle width=21.91128389999999pt height=29.190975000000005pt/> and <img src="svgs/269c9fdebb47178d570db923f16834ad.svg?invert_in_darkmode" align=middle width=21.97781519999999pt height=29.190975000000005pt/> we get rid of the factorial terms and end up manipulating polynomials. In turn, the (truncated) composition of polynomials can be implemented using the product rule for building the monomials one by one.
 
 ### Animation speed

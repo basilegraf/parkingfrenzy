@@ -185,7 +185,11 @@ f(g(s)) = p_1 \circ p_2 \circ p_3 (s-s_0) = \sum_k \frac 1 {k!}
 $$
 
 Hence, computing the first $n$ coefficients of the power series
-$$ p_1 \circ p_2 \circ p_3 (w) $$
+
+$$
+p_1 \circ p_2 \circ p_3 (w)
+$$
+
 we get the first $n$ derivatives of $f(g(s))$. Furthermore, re-expressing everything in terms of $f^{[i]}$ and $g^{[j]}$ we get rid of the factorial terms and end up manipulating polynomials. In turn, the (truncated) composition of polynomials can be implemented using the product rule for building the monomials one by one.
 
 ### Animation speed
