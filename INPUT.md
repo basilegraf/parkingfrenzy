@@ -1,5 +1,7 @@
 # Parking Frenzy
 
+![](anim-min.gif)
+
 ### Efficient maneuver computation for vehicles with many trailers
 
 Explicit computation of control input for [non-holonomic](https://en.wikipedia.org/wiki/Nonholonomic_system) vehicles is a classical application example for the theory of [differential flatness](https://en.wikipedia.org/wiki/Flatness_(systems_theory)). In particular, it allows to determine the required steering profile of a car with trailers given the path profile that the last trailer axle should follow.
@@ -34,8 +36,9 @@ $$
 
 Using $q_k(s):=(x_k(s), y_k(s))^T$ and applying the above equation $n-1$ times, we get a map
 $$
-\varphi: \quad \left(q_1(s), q_1^{(1)}(s), \ldots, q_1^{(n-1)}(s)\right) \ \longmapsto \ \big(q_1(s), ..., q_n(s)\big) 
+\varphi: \quad \left(q_1(s), q_1^{(1)}(s), \ldots, q_1^{(n-1)}(s)\right) \ \longmapsto \ \big(q_1(s), ..., q_n(s)\big)
 $$
+
 which allows to compute all trailer positions from the derivatives of the desired trajectory of $q_1(s)$.
 
 However, doing so more than a few times (even using computer algebra) quickly leads to very large expressions and computation time. This is mainly due to the repeated derivatives of the square root term.
@@ -121,3 +124,54 @@ To complete the computations of $\phi_k$, we still need a high order composition
 $$
 \cos{\alpha_k} \quad \textnormal{and} \quad \sin{\alpha_k}
 $$
+The first attempt was made using [Faa di Bruno's](https://en.wikipedia.org/wiki/Fa%C3%A0_di_Bruno%27s_formula) formula, in particular the form involving [Bell polynomials](https://en.wikipedia.org/wiki/Bell_polynomials#Recurrence_relations) since these can be easily implemented in code via a seemingly efficient recurrence relation. It turns out however that computing these polynomials this way quickly leads to very long computation times. I then stumbled on a [post](https://mathoverflow.net/questions/364036/combinatorics-of-multivariate-fa%C3%A0-di-bruno-formula) noting the "inefficiency" of Faa di Bruno formulae compared to power series approaches. Indeed, it is better to reconsider the problem from the point of view of formal power series. Our goal is to compute the first $n$ derivatives of the composite function $f(g(s))$ (at a given value of $s$)
+
+To this end, let us look at the Taylor expansion of $f(g(s_0))$ around $g(s_0)$.
+$$
+f(g(s_0)) 
+= \sum_k \frac 1 {k!} f^{(k)}\left( g(s_0) \right) \left( g(s) - g(s_0) \right)^k
+$$
+and then, let us replace $g(s)$ by its Taylor series around $s_0$
+$$
+f(g(s_0)) 
+= \sum_k \frac 1 {k!} f^{(k)}\left( g(s_0) \right) \left(
+\left\{ 
+\sum_l \frac 1 {l!} g^{(l)}(l_0)\cdot(s-s_0)^l
+\right\}
+ - g(s_0) \right)^k
+$$
+Clearly, defining the power series
+$$
+p_1(x) := \sum_k \frac 1 {k!} f^{(k)}(g(s_0)) \cdot x^k 
+$$
+
+$$
+p_2(y) := -g(s_0) + y
+$$
+$$
+p_3(z) := \sum_l \frac{1}{l!} g^{(l)}(s_0) \cdot z^l
+$$
+we have that
+$$
+f(g(s)) = p_1 \circ p_2 \circ p_3 (s-s_0) = \sum_k \frac 1 {k!} 
+\underbrace{\left(\frac{d^k f(g(s))}{ds^k}\right)\Bigg|_{s=s_0}}_{\textnormal{values of interrest}} (s-s_0)^k
+$$
+Hence, computing the first $n$ coefficients of the power series
+$$ p_1 \circ p_2 \circ p_3 (w) $$
+we get the first $n$ derivatives of $f(g(s))$. Furthermore, re-expressing everything in terms of $f^{[i]}$ and $g^{[j]}$ we get rid of the factorial terms and end up manipulating polynomials. In turn, the (truncated) composition of polynomials can be implemented using the product rule for building the monomials one by one.
+
+### Animation speed
+
+To produce an animation of a car with many trailers, one chooses a trajectory $\q_1(s)$ for the last trailer's axle and then use the map $\varphi$ to compute all the other trailers and car positions. However doing so and using $s=t$ leads to a jerky animation since the head car's speed generally varies wildly (high derivatives) over time. As a remedy, we impose the head car's rear axle speed (which can be computed from the derivatives of $q_1(s(t))$ integration of the equation
+
+$$
+\dot s(t) = \frac 1 {\sqrt{x'^2_{n-1}(s(t)) + y'^2_{n-1}(s(t))}}
+$$
+
+
+### Note
+
+Equations in this README file where typesetted with the help of [readme2tex](https://github.com/leegao/readme2tex)
+
+
+
