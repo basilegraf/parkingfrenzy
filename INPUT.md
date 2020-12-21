@@ -101,8 +101,23 @@ $$
 \begin{pmatrix} r \\ j \end{pmatrix}
 f^{(r-j)}(s) \cdot g^{(j)}(s).
 $$
-To get the quotient rule for $f(s)/g(s)$, one first obtain a rule for the reciprocal $\bar g(s) = 1/g(s)$. This rule is obtained from the product rule and the equation $g(s)\cdot\bar g(s) = 1$. The product rule is then applied again on $f(s)\cdot\bar g(s)$.
+To get the quotient rule for $f(s)/g(s)$, one first obtains a rule for the reciprocal $\bar g(s) = 1/g(s)$. This rule is obtained from the product rule and the equation $g(s)\cdot\bar g(s) = 1$. The product rule is then applied again on $f(s)\cdot\bar{g(s)}$.
+
+Next define
+$$
+f^{[k]}(s) := \frac 1 {k!} f^(k)(s)
+$$
+then
+$$
+\left(f\cdot g\right)^{[r]}  = \sum_{j=0}^r 
+f^{[r-j]}(s) \cdot g^{[j]}(s).
+$$
+This has two benefits: 1) the product rule uses simple coefficients convolution, 2) since high order derivatives tend to be numerically large, dividing them by $k!$ leads to better "conditioned " computations. Note that the above is the same as computing the coefficients of the product of polynomials with coefficients $f^{[i]}$ and $g^{[j]}$ and truncating the result at degree $r$. The corresponding quotient rule is obtained in the same way as above.
 
 
+### High order composition rule
 
-
+To complete the computations of $\phi_k$, we still need a high order composition rule to compute the derivatives of 
+$$
+\cos{\alpha_k} \quad \textnormal{and} \quad \sin{\alpha_k}
+$$
