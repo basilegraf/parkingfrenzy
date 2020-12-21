@@ -30,10 +30,13 @@ However, doing so more than a few times (even using computer algebra) quickly le
 ### Using angles
 
 The first trick is to use additional angle variables by rewriting the recursive equation as follows
+
 <p align="center"><img src="svgs/a7b54b67451299756605243a90781a8f.svg?invert_in_darkmode" align=middle width=537.3826425pt height=39.452455349999994pt/></p>
 
 This is useful because from the first derivative of the arc-tangent we get
+
 <p align="center"><img src="svgs/1e0d1c11fc3692a45745cf77946b487d.svg?invert_in_darkmode" align=middle width=354.97668689999995pt height=39.713394599999994pt/></p>
+
 and this expression is rational in (no square roots). Hence, the multiple derivatives <img src="svgs/2847a70544ff96fda68b9912890814ad.svg?invert_in_darkmode" align=middle width=48.620754599999984pt height=29.190975000000005pt/> of <img src="svgs/be7aa80b01a2c2c39ea4ed4cff441af6.svg?invert_in_darkmode" align=middle width=31.067411099999987pt height=24.65753399999998pt/> can be computed from the derivatives of <img src="svgs/6347cbf489ed80f180d33a57b743e25a.svg?invert_in_darkmode" align=middle width=47.71701164999999pt height=24.65753399999998pt/> by successively applying product rules and quotient rules. In turn, the derivatives of <img src="svgs/c1dee54b8aace34fac6027f0e9a39402.svg?invert_in_darkmode" align=middle width=43.54461869999999pt height=24.65753399999998pt/> and <img src="svgs/abf8c6ff8182a6059b1d51860f5375a2.svg?invert_in_darkmode" align=middle width=45.37108289999999pt height=24.65753399999998pt/> are obtained by applying chain rules. These product-, quotient- and chain-rules are higher order variant of the usual ones (more on this below).
 
 ### More intermediate variables
