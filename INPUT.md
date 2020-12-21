@@ -118,7 +118,7 @@ $$
 f^{(r-j)}(s) \cdot g^{(j)}(s).
 $$
 
-To get the quotient rule for $f(s)/g(s)$, one first obtains a rule for the reciprocal $\bar g(s) = 1/g(s)$. This rule is obtained from the product rule and the equation $g(s)\cdot\bar g(s) = 1$. The product rule is then applied again on $f(s)\cdot\bar{g(s)}$.
+To get the quotient rule for $f(s)/g(s)$, one first obtains a rule for the reciprocal $\bar g(s) = 1/g(s)$. This rule is obtained from the product rule and the equation $g(s)\cdot\bar g(s) = 1$. The product rule is then applied again on $f(s)\cdot\bar{g}(s)$.
 
 Next define
 

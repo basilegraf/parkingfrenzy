@@ -62,7 +62,7 @@ with the quotient rule. The product rule is given by
 
 <p align="center"><img src="svgs/abbdb186fdfbc5f2da82dc54c3104224.svg?invert_in_darkmode" align=middle width=321.6987939pt height=47.1348339pt/></p>
 
-To get the quotient rule for <img src="svgs/a79b98382d240e9a9ffbd6eb7ae7014f.svg?invert_in_darkmode" align=middle width=67.44880559999999pt height=24.65753399999998pt/>, one first obtains a rule for the reciprocal <img src="svgs/05d3043eab0f4e5440902a1b8fca69e9.svg?invert_in_darkmode" align=middle width=96.19858379999998pt height=24.65753399999998pt/>. This rule is obtained from the product rule and the equation <img src="svgs/fbd20db80429bd1a105e634ae0f5a9ed.svg?invert_in_darkmode" align=middle width=99.8513571pt height=24.65753399999998pt/>. The product rule is then applied again on <img src="svgs/507ad28ff324a6f5a8ebe56f72f6fc62.svg?invert_in_darkmode" align=middle width=71.10157724999998pt height=29.168957400000025pt/>.
+To get the quotient rule for <img src="svgs/a79b98382d240e9a9ffbd6eb7ae7014f.svg?invert_in_darkmode" align=middle width=67.44880559999999pt height=24.65753399999998pt/>, one first obtains a rule for the reciprocal <img src="svgs/05d3043eab0f4e5440902a1b8fca69e9.svg?invert_in_darkmode" align=middle width=96.19858379999998pt height=24.65753399999998pt/>. This rule is obtained from the product rule and the equation <img src="svgs/fbd20db80429bd1a105e634ae0f5a9ed.svg?invert_in_darkmode" align=middle width=99.8513571pt height=24.65753399999998pt/>. The product rule is then applied again on <img src="svgs/fe3f2f532573e3d29d020fc29dcbd46e.svg?invert_in_darkmode" align=middle width=71.10157229999999pt height=24.65753399999998pt/>.
 
 Next define
 
