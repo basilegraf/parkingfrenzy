@@ -2,6 +2,8 @@
 
 ![](anim-min.gif)
 
+[Nicer animation](https://www.youtube.com/watch?v=t34qcpstTYk)
+
 ### Efficient maneuver computation for vehicles with many trailers
 
 Explicit computation of control input for [non-holonomic](https://en.wikipedia.org/wiki/Nonholonomic_system) vehicles is a classical application example for the theory of [differential flatness](https://en.wikipedia.org/wiki/Flatness_(systems_theory)). In particular, it allows to determine the required steering profile of a car with trailers given the path profile that the last trailer axle should follow.
