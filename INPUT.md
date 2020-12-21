@@ -162,7 +162,7 @@ we get the first $n$ derivatives of $f(g(s))$. Furthermore, re-expressing everyt
 
 ### Animation speed
 
-To produce an animation of a car with many trailers, one chooses a trajectory $\q_1(s)$ for the last trailer's axle and then use the map $\varphi$ to compute all the other trailers and car positions. However doing so and using $s=t$ leads to a jerky animation since the head car's speed generally varies wildly (high derivatives) over time. As a remedy, we impose the head car's rear axle speed (which can be computed from the derivatives of $q_1(s(t))$ integration of the equation
+To produce an animation of a car with many trailers, one chooses a trajectory $q_1(s)$ for the last trailer's axle and then use the map $\varphi$ to compute all the other trailers and car positions. However doing so and using $s=t$ leads to a jerky animation since the head car's speed generally varies wildly (high derivatives) over time. As a remedy, we impose the head car's rear axle speed (which can be computed from the derivatives of $q_1(s(t))$ integration of the equation
 
 $$
 \dot s(t) = \frac 1 {\sqrt{x'^2_{n-1}(s(t)) + y'^2_{n-1}(s(t))}}
