@@ -79,7 +79,7 @@ $$
 = \frac{x'_k y''_k - x''_k y'_k}{x'^2_k + y'^2_k}
 $$
 
-and this expression is rational in (no square roots). Hence, the multiple derivatives $\alpha^{(r)}(s)$ of $\alpha(s)$ can be computed from the derivatives of $x_{1,2}(s)$ by successively applying product rules and quotient rules. In turn, the derivatives of $\sin(\alpha)$ and $\cos(\alpha)$ are obtained by applying chain rules. These product-, quotient- and chain-rules are higher order variant of the usual ones (more on this below).
+and this expression is rational in (no square roots). Hence, the multiple derivatives $\alpha_k^{(r)}(s)$ of $\alpha_k(s)$ can be computed from the derivatives of $x_{1,2}(s)$ by successively applying product rules and quotient rules. In turn, the derivatives of $\sin(\alpha_k)$ and $\cos(\alpha_k)$ are obtained by applying chain rules. These product-, quotient- and chain-rules are higher order variant of the usual ones (more on this below).
 
 ### More intermediate variables
 
