@@ -31,7 +31,7 @@ However, doing so more than a few times (even using computer algebra) quickly le
 
 The first trick is to use additional angle variables by rewriting the recursive equation as follows
 
-<p align="center"><img src="svgs/a7b54b67451299756605243a90781a8f.svg?invert_in_darkmode" align=middle width=537.3826425pt height=39.452455349999994pt/></p>
+<p align="center"><img src="svgs/360c957c7625ea6c60d1120b38b9ca31.svg?invert_in_darkmode" align=middle width=545.40973575pt height=39.452455349999994pt/></p>
 
 This is useful because from the first derivative of the arc-tangent we get
 

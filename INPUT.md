@@ -68,7 +68,7 @@ L_k
 \qquad
 \textnormal{with}
 \qquad
-\alpha(s) = \arctan_2(x_{k}'(s),y_{k}'(s)).
+\alpha_k(s) = \arctan_2(x_{k}'(s),y_{k}'(s)).
 $$
 
 This is useful because from the first derivative of the arc-tangent we get
